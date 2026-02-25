@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First Things First - Covey Quadrant To-Do</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f5f7;
+    color: #1e293b;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: #fff;
+    padding: 28px 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 120%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(244,114,82,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  header h1 {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    position: relative;
+  }
+  header p {
+    font-size: 0.82rem;
+    font-weight: 400;
+    opacity: 0.5;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* ── Task Input Bar ── */
+  .input-bar {
+    background: #fff;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #e8eaed;
+  }
+  .input-bar input[type="text"] {
+    flex: 1 1 280px;
+    padding: 11px 16px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    border: 1.5px solid #e2e5e9;
+    border-radius: 10px;
+    outline: none;
+    background: #f8f9fb;
+    transition: all 0.25s ease;
+    color: #1e293b;
+  }
+  .input-bar input[type="text"]::placeholder { color: #94a3b8; }
+  .input-bar input[type="text"]:focus {
+    border-color: #6366f1;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  }
+
+  .toggle-group { display: flex; gap: 8px; }
+  .toggle-btn {
+    padding: 9px 20px;
+    border: 1.5px solid #e2e5e9;
+    border-radius: 24px;
+    background: #f8f9fb;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    color: #64748b;
+    letter-spacing: 0.2px;
+  }
+  .toggle-btn:hover { border-color: #cbd5e1; background: #f1f3f5; }
+  .toggle-btn.active-urgent {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+  }
+  .toggle-btn.active-important {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+  }
+
+  .add-btn {
+    padding: 11px 28px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.2px;
+  }
+  .add-btn:hover {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    box-shadow: 0 4px 12px rgba(15,23,42,0.2);
+    transform: translateY(-1px);
+  }
+  .add-btn:active { transform: translateY(0); }
+
+  /* ── Quadrant Grid ── */
+  .quadrant-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 20px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .quadrant {
+    background: #fff;
+    border-radius: 14px;
+    min-height: 230px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .quadrant:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
+
+  .quadrant-header {
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .quadrant-header .count {
+    background: rgba(255,255,255,0.25);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+  .quadrant-body {
+    padding: 10px 14px 14px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Quadrant Colors - refined gradients */
+  .q1 .quadrant-header { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+  .q2 .quadrant-header { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; }
+  .q3 .quadrant-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+  .q4 .quadrant-header { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; }
+
+  /* ── Extra Sections ── */
+  .extra-sections {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .section {
+    background: #fff;
+    border-radius: 14px;
+    min-height: 120px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: box-shadow 0.3s ease;
+  }
+  .section:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
+  .monitor .quadrant-header { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
+  .completed .quadrant-header { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+
+  /* ── Task Item ── */
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #f8f9fb;
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .task-item:hover { background: #f1f3f7; transform: translateX(2px); }
+  .q1 .task-item { border-left-color: #ef4444; }
+  .q2 .task-item { border-left-color: #6366f1; }
+  .q3 .task-item { border-left-color: #f59e0b; }
+  .q4 .task-item { border-left-color: #94a3b8; }
+  .monitor .task-item { border-left-color: #f59e0b; }
+  .completed .task-item { border-left-color: #22c55e; opacity: 0.6; }
+  .completed .task-item .task-text { text-decoration: line-through; color: #94a3b8; }
+
+  .task-text {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 450;
+    line-height: 1.45;
+    word-break: break-word;
+    color: #334155;
+  }
+  .task-date {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+  .task-select {
+    padding: 5px 8px;
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 500;
+    border: 1.5px solid #e2e5e9;
+    border-radius: 8px;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  .task-select:hover { border-color: #cbd5e1; }
+  .task-select:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+  .task-delete {
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 1.15rem;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .task-delete:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .toolbar button {
+    padding: 8px 18px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1.5px solid #e2e5e9;
+    border-radius: 8px;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+  }
+  .toolbar button:hover { background: #f8f9fb; border-color: #cbd5e1; color: #475569; }
+
+  /* ── Axis Labels ── */
+  .grid-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 0;
+    position: relative;
+  }
+  .axis-labels-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 16px 0 8px;
+    text-align: center;
+  }
+  .axis-labels-top span {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #94a3b8;
+  }
+  .row-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: absolute;
+    left: 2px;
+    top: 40px;
+    bottom: 0;
+    pointer-events: none;
+  }
+  .row-label {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  .empty-msg {
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    padding: 32px 0;
+    font-weight: 500;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .quadrant-grid, .extra-sections { grid-template-columns: 1fr; }
+    .input-bar { flex-direction: column; align-items: stretch; }
+    .input-bar input[type="text"] { flex: none; }
+    .toggle-group { justify-content: center; }
+    .axis-labels-top, .row-labels { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>First Things First</h1>
+  <p>Covey Quadrant Task Manager</p>
+</header>
+
+<div class="input-bar">
+  <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
+  <div class="toggle-group">
+    <button class="toggle-btn" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
+    <button class="toggle-btn" id="importantToggle" onclick="toggleImportant()">Important</button>
+  </div>
+  <button class="add-btn" onclick="addTask()">Add Task</button>
+</div>
+
+<div class="grid-wrapper">
+  <div class="axis-labels-top">
+    <span>Urgent</span>
+    <span>Not Urgent</span>
+  </div>
+  <div class="row-labels">
+    <span class="row-label">Important</span>
+    <span class="row-label">Not Important</span>
+  </div>
+  <div class="quadrant-grid" style="padding-left:24px;">
+    <div class="quadrant q1" id="q1-panel">
+      <div class="quadrant-header">
+        <span>I &mdash; Urgent &amp; Important</span>
+        <span class="count" id="q1-count">0</span>
+      </div>
+      <div class="quadrant-body" id="q1-body"></div>
+    </div>
+    <div class="quadrant q2" id="q2-panel">
+      <div class="quadrant-header">
+        <span>II &mdash; Not Urgent &amp; Important</span>
+        <span class="count" id="q2-count">0</span>
+      </div>
+      <div class="quadrant-body" id="q2-body"></div>
+    </div>
+    <div class="quadrant q3" id="q3-panel">
+      <div class="quadrant-header">
+        <span>III &mdash; Urgent &amp; Not Important</span>
+        <span class="count" id="q3-count">0</span>
+      </div>
+      <div class="quadrant-body" id="q3-body"></div>
+    </div>
+    <div class="quadrant q4" id="q4-panel">
+      <div class="quadrant-header">
+        <span>IV &mdash; Not Urgent &amp; Not Important</span>
+        <span class="count" id="q4-count">0</span>
+      </div>
+      <div class="quadrant-body" id="q4-body"></div>
+    </div>
+  </div>
+</div>
+
+<div class="extra-sections">
+  <div class="section monitor" id="monitor-panel">
+    <div class="quadrant-header">
+      <span>Monitor</span>
+      <span class="count" id="monitor-count">0</span>
+    </div>
+    <div class="quadrant-body" id="monitor-body"></div>
+  </div>
+  <div class="section completed" id="completed-panel">
+    <div class="quadrant-header">
+      <span>Completed</span>
+      <span class="count" id="completed-count">0</span>
+    </div>
+    <div class="quadrant-body" id="completed-body"></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <button onclick="exportJSON()">Export JSON</button>
+  <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+</div>
+
+<script>
+  const STORAGE_KEY = 'covey_tasks';
+  let tasks = [];
+  let isUrgent = false;
+  let isImportant = false;
+
+  function init() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try { tasks = JSON.parse(saved); } catch(e) { tasks = []; }
+    }
+    render();
+    document.getElementById('taskInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addTask();
+    });
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function getQuadrant(urgent, important) {
+    if (urgent && important) return 'q1';
+    if (!urgent && important) return 'q2';
+    if (urgent && !important) return 'q3';
+    return 'q4';
+  }
+
+  function toggleUrgent() {
+    isUrgent = !isUrgent;
+    document.getElementById('urgentToggle').classList.toggle('active-urgent', isUrgent);
+  }
+
+  function toggleImportant() {
+    isImportant = !isImportant;
+    document.getElementById('importantToggle').classList.toggle('active-important', isImportant);
+  }
+
+  function addTask() {
+    const input = document.getElementById('taskInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const quadrant = getQuadrant(isUrgent, isImportant);
+    tasks.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      text: text,
+      quadrant: quadrant,
+      createdAt: new Date().toISOString(),
+      completedAt: null
+    });
+
+    input.value = '';
+    isUrgent = false;
+    isImportant = false;
+    document.getElementById('urgentToggle').classList.remove('active-urgent');
+    document.getElementById('importantToggle').classList.remove('active-important');
+    input.focus();
+
+    save();
+    render();
+  }
+
+  function moveTask(taskId, newQuadrant) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    task.quadrant = newQuadrant;
+    if (newQuadrant === 'completed') {
+      task.completedAt = new Date().toISOString();
+    } else {
+      task.completedAt = null;
+    }
+    save();
+    render();
+  }
+
+  function deleteTask(taskId) {
+    tasks = tasks.filter(t => t.id !== taskId);
+    save();
+    render();
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function buildTaskEl(task) {
+    const div = document.createElement('div');
+    div.className = 'task-item';
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'task-text';
+    textSpan.textContent = task.text;
+
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'task-date';
+    dateSpan.textContent = formatDate(task.createdAt);
+
+    const select = document.createElement('select');
+    select.className = 'task-select';
+    const options = [
+      { value: 'q1', label: 'I - Urgent & Important' },
+      { value: 'q2', label: 'II - Not Urgent & Important' },
+      { value: 'q3', label: 'III - Urgent & Not Important' },
+      { value: 'q4', label: 'IV - Not Urgent & Not Important' },
+      { value: 'monitor', label: 'Monitor' },
+      { value: 'completed', label: 'Completed' }
+    ];
+    options.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.value;
+      o.textContent = opt.label;
+      if (opt.value === task.quadrant) o.selected = true;
+      select.appendChild(o);
+    });
+    select.addEventListener('change', function() {
+      moveTask(task.id, this.value);
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'task-delete';
+    delBtn.innerHTML = '&times;';
+    delBtn.title = 'Delete task';
+    delBtn.addEventListener('click', function() { deleteTask(task.id); });
+
+    div.appendChild(textSpan);
+    div.appendChild(dateSpan);
+    div.appendChild(select);
+    div.appendChild(delBtn);
+    return div;
+  }
+
+  function render() {
+    const buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
+    tasks.forEach(t => {
+      if (buckets[t.quadrant]) buckets[t.quadrant].push(t);
+    });
+
+    Object.keys(buckets).forEach(key => {
+      const body = document.getElementById(key + '-body');
+      const countEl = document.getElementById(key + '-count');
+      body.innerHTML = '';
+      countEl.textContent = buckets[key].length;
+
+      if (buckets[key].length === 0) {
+        const msg = document.createElement('div');
+        msg.className = 'empty-msg';
+        msg.textContent = key === 'completed' ? 'No completed tasks yet' : 'No tasks here';
+        body.appendChild(msg);
+      } else {
+        buckets[key].forEach(task => {
+          body.appendChild(buildTaskEl(task));
+        });
+      }
+    });
+  }
+
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'covey-tasks.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (Array.isArray(imported)) {
+          tasks = imported;
+          save();
+          render();
+        }
+      } catch(err) {
+        alert('Invalid JSON file');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  init();
+</script>
+</body>
+</html>
