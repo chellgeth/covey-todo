@@ -367,8 +367,8 @@
 <div class="input-bar">
   <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
   <div class="toggle-group">
-    <button class="toggle-btn" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
-    <button class="toggle-btn" id="importantToggle" onclick="toggleImportant()">Important</button>
+    <button class="toggle-btn active-urgent" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
+    <button class="toggle-btn active-important" id="importantToggle" onclick="toggleImportant()">Important</button>
   </div>
   <button class="add-btn" onclick="addTask()">Add Task</button>
 </div>
@@ -432,8 +432,8 @@
 <script>
   const STORAGE_KEY = 'covey_tasks';
   let tasks = [];
-  let isUrgent = false;
-  let isImportant = false;
+  let isUrgent = true;
+  let isImportant = true;
 
   function init() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -482,10 +482,10 @@
     });
 
     input.value = '';
-    isUrgent = false;
-    isImportant = false;
-    document.getElementById('urgentToggle').classList.remove('active-urgent');
-    document.getElementById('importantToggle').classList.remove('active-important');
+    isUrgent = true;
+    isImportant = true;
+    document.getElementById('urgentToggle').classList.add('active-urgent');
+    document.getElementById('importantToggle').classList.add('active-important');
     input.focus();
 
     save();
