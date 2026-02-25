@@ -1,880 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>First Things First - Covey Quadrant To-Do</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    /* ── Color Palette ── */
-    --color-900: #023E8A;
-    --color-900-dark: #01337a;
-    --color-700: #0077B6;
-    --color-600: #0096C7;
-    --color-500: #00B4D8;
-    --color-400: #48CAE4;
-    --color-300: #90E0EF;
-    --color-100: #CAF0F8;
-    --color-50: #f0fafe;
-    --color-hover: #e0f7fc;
-    --color-white: #fff;
-
-    /* ── Semantic Aliases ── */
-    --bg-page: var(--color-100);
-    --bg-card: var(--color-white);
-    --bg-input: var(--color-50);
-    --bg-hover: var(--color-hover);
-    --text-primary: var(--color-900);
-    --text-accent: var(--color-700);
-    --text-muted: rgba(0, 119, 182, 0.6);
-    --border-light: var(--color-300);
-    --border-focus: var(--color-700);
-    --shadow-base: rgba(2, 62, 138, 0.05);
-    --shadow-hover: rgba(2, 62, 138, 0.07);
-    --focus-ring: rgba(0, 119, 182, 0.12);
-  }
-
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-page);
-    color: var(--text-primary);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  header {
-    background: linear-gradient(135deg, var(--color-900) 0%, var(--color-700) 100%);
-    color: var(--color-white);
-    padding: 28px 32px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -10%;
-    width: 120%;
-    height: 200%;
-    background: radial-gradient(ellipse at 30% 50%, rgba(144,224,239,0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 50%, rgba(202,240,248,0.1) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  header h1 {
-    font-size: 1.65rem;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    position: relative;
-  }
-  header p {
-    font-size: 0.82rem;
-    font-weight: 400;
-    opacity: 0.5;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    position: relative;
-  }
-
-  /* ── Task Input Bar ── */
-  .input-bar {
-    background: var(--bg-card);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    box-shadow: 0 1px 3px rgba(2,62,138,0.04), 0 4px 12px rgba(2,62,138,0.03);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .input-bar input[type="text"] {
-    flex: 1 1 280px;
-    padding: 11px 16px;
-    font-family: inherit;
-    font-size: 0.92rem;
-    border: 1.5px solid var(--border-light);
-    border-radius: 10px;
-    outline: none;
-    background: var(--bg-input);
-    transition: all 0.25s ease;
-    color: var(--text-primary);
-  }
-  .input-bar input[type="text"]::placeholder { color: var(--text-muted); }
-  .input-bar input[type="text"]:focus {
-    border-color: var(--border-focus);
-    background: var(--bg-card);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-  }
-
-  .toggle-group { display: flex; gap: 8px; }
-  .toggle-btn {
-    padding: 9px 20px;
-    border: 1.5px solid var(--border-light);
-    border-radius: 24px;
-    background: var(--bg-input);
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    user-select: none;
-    color: var(--text-accent);
-    letter-spacing: 0.2px;
-  }
-  .toggle-btn:hover { border-color: var(--border-focus); background: var(--bg-hover); }
-  .toggle-btn.active-urgent {
-    background: linear-gradient(135deg, var(--color-900), var(--color-900-dark));
-    color: var(--color-white);
-    border-color: transparent;
-    box-shadow: 0 2px 8px rgba(2,62,138,0.35);
-  }
-  .toggle-btn.active-important {
-    background: linear-gradient(135deg, var(--color-700), var(--color-600));
-    color: var(--color-white);
-    border-color: transparent;
-    box-shadow: 0 2px 8px rgba(0,119,182,0.35);
-  }
-
-  .add-btn {
-    padding: 11px 28px;
-    background: linear-gradient(135deg, var(--color-900), var(--color-700));
-    color: var(--color-white);
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    letter-spacing: 0.2px;
-  }
-  .add-btn:hover {
-    background: linear-gradient(135deg, var(--color-700), var(--color-600));
-    box-shadow: 0 4px 12px rgba(2,62,138,0.25);
-    transform: translateY(-1px);
-  }
-  .add-btn:active { transform: translateY(0); }
-
-  /* ── Quadrant Grid ── */
-  .quadrant-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    padding: 20px 24px;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .quadrant {
-    background: var(--bg-card);
-    border-radius: 14px;
-    min-height: 230px;
-    box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: box-shadow 0.3s ease;
-    border: 1px solid rgba(0,119,182,0.08);
-  }
-  .quadrant:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
-
-  .quadrant-header {
-    padding: 14px 18px;
-    font-weight: 700;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .quadrant-header .header-left {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .quadrant-header .header-subtitle {
-    font-size: 0.68rem;
-    font-weight: 400;
-    text-transform: none;
-    letter-spacing: 0.1px;
-    opacity: 0.8;
-    line-height: 1.35;
-  }
-  .quadrant-header .count {
-    background: rgba(255,255,255,0.25);
-    padding: 3px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    backdrop-filter: blur(4px);
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .quadrant-body {
-    padding: 10px 14px 14px;
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  /* Quadrant Colors - ocean blue palette */
-  .q1 .quadrant-header { background: linear-gradient(135deg, var(--color-900), var(--color-900-dark)); color: var(--color-white); }
-  .q2 .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-600)); color: var(--color-white); }
-  .q3 .quadrant-header { background: linear-gradient(135deg, var(--color-600), var(--color-500)); color: var(--color-white); }
-  .q4 .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
-
-  /* ── Extra Sections ── */
-  .extra-sections {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 24px 40px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .section {
-    background: var(--bg-card);
-    border-radius: 14px;
-    min-height: 120px;
-    box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border: 1px solid rgba(0,119,182,0.08);
-    transition: box-shadow 0.3s ease;
-  }
-  .section:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
-  .monitor .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-900)); color: var(--color-white); }
-  .completed .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
-
-  /* ── Task Item ── */
-  .task-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    background: var(--bg-input);
-    border-radius: 10px;
-    border-left: 3px solid transparent;
-    transition: all 0.2s ease;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .task-item:hover { background: var(--bg-hover); transform: translateX(2px); }
-  .q1 .task-item { border-left-color: var(--color-900); }
-  .q2 .task-item { border-left-color: var(--color-700); }
-  .q3 .task-item { border-left-color: var(--color-500); }
-  .q4 .task-item { border-left-color: var(--color-300); }
-  .monitor .task-item { border-left-color: var(--color-700); }
-  .completed .task-item { border-left-color: var(--color-400); opacity: 0.6; }
-  .completed .task-item .task-text { text-decoration: line-through; color: var(--color-300); }
-
-  .task-text {
-    flex: 1;
-    font-size: 0.88rem;
-    font-weight: 450;
-    line-height: 1.45;
-    word-break: break-word;
-    color: var(--text-primary);
-  }
-  .task-date {
-    font-size: 0.68rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    white-space: nowrap;
-    letter-spacing: 0.2px;
-  }
-  .task-select {
-    padding: 5px 8px;
-    font-family: inherit;
-    font-size: 0.74rem;
-    font-weight: 500;
-    border: 1.5px solid var(--border-light);
-    border-radius: 8px;
-    background: var(--bg-card);
-    color: var(--text-accent);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    outline: none;
-  }
-  .task-select:hover { border-color: var(--border-focus); }
-  .task-select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--focus-ring); }
-  .task-delete {
-    background: none;
-    border: none;
-    color: var(--color-300);
-    cursor: pointer;
-    font-size: 1.15rem;
-    padding: 2px 6px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-  .task-delete:hover { color: var(--text-primary); background: rgba(2,62,138,0.08); }
-
-  /* ── Toolbar ── */
-  .toolbar {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 24px 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-  .toolbar button {
-    padding: 8px 18px;
-    font-family: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    border: 1.5px solid var(--border-light);
-    border-radius: 8px;
-    background: var(--bg-card);
-    color: var(--text-accent);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    letter-spacing: 0.2px;
-  }
-  .toolbar button:hover { background: var(--bg-hover); border-color: var(--border-focus); color: var(--text-primary); }
-
-  .grid-wrapper {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  .empty-msg {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.78rem;
-    padding: 24px 16px;
-    font-weight: 500;
-    line-height: 1.6;
-  }
-  .empty-msg .empty-title {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--color-300);
-    font-size: 0.82rem;
-  }
-  .empty-msg .empty-examples {
-    font-size: 0.73rem;
-    font-weight: 400;
-    font-style: italic;
-    opacity: 0.8;
-  }
-
-  /* ── Attachment Styles ── */
-  .task-attach-btn {
-    background: none;
-    border: none;
-    color: var(--color-300);
-    cursor: pointer;
-    font-size: 0.95rem;
-    padding: 2px 6px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-  .task-attach-btn:hover { color: var(--text-primary); background: rgba(2,62,138,0.08); }
-  .task-attachments {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 6px;
-    padding-left: 2px;
-  }
-  .attachment-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--text-accent);
-    max-width: 180px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .attachment-chip:hover { border-color: var(--border-focus); background: var(--bg-hover); }
-  .attachment-chip .att-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .attachment-chip .att-remove {
-    background: none;
-    border: none;
-    color: var(--color-300);
-    cursor: pointer;
-    font-size: 0.85rem;
-    line-height: 1;
-    padding: 0 1px;
-    flex-shrink: 0;
-  }
-  .attachment-chip .att-remove:hover { color: var(--text-primary); }
-  .task-item-wrapper { margin-bottom: 8px; }
-  .task-item-wrapper .task-item { margin-bottom: 0; }
-
-  /* ── Print / Report Styles ── */
-  @media print {
-    body { background: #fff; }
-    .input-bar, .toolbar, .task-select, .task-delete, .task-attach-btn,
-    .attachment-chip .att-remove { display: none !important; }
-    header {
-      background: var(--color-900) !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      padding: 16px 24px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First Things First - Covey Quadrant To-Do</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-900: #023E8A;
+      --color-900-dark: #01337a;
+      --color-700: #0077B6;
+      --color-600: #0096C7;
+      --color-500: #00B4D8;
+      --color-400: #48CAE4;
+      --color-300: #90E0EF;
+      --color-100: #CAF0F8;
+      --color-50: #f0fafe;
+      --color-hover: #e0f7fc;
+      --color-white: #fff;
+      --bg-page: var(--color-100);
+      --bg-card: var(--color-white);
+      --bg-input: var(--color-50);
+      --bg-hover: var(--color-hover);
+      --text-primary: var(--color-900);
+      --text-accent: var(--color-700);
+      --text-muted: rgba(0, 119, 182, 0.6);
+      --border-light: var(--color-300);
+      --border-focus: var(--color-700);
+      --shadow-base: rgba(2, 62, 138, 0.05);
+      --shadow-hover: rgba(2, 62, 138, 0.07);
+      --focus-ring: rgba(0, 119, 182, 0.12);
     }
-    header h1 { font-size: 1.3rem; }
-    header p { font-size: 0.7rem; }
-    .grid-wrapper, .extra-sections { max-width: 100%; padding: 10px 16px; }
-    .quadrant-grid { gap: 12px; padding: 10px 0; max-width: 100%; }
-    .quadrant { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-    .quadrant-header {
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      padding: 8px 14px;
-      font-size: 0.72rem;
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; }
+    #sync-status {
+      position: fixed; bottom: 16px; right: 16px;
+      background: var(--color-900); color: var(--color-white);
+      padding: 8px 16px; border-radius: 20px;
+      font-size: 0.76rem; font-weight: 600;
+      opacity: 0; transition: opacity 0.4s ease;
+      z-index: 999; pointer-events: none;
     }
-    .quadrant-header .header-subtitle { font-size: 0.6rem; }
-    .quadrant-body { padding: 8px 10px; }
-    .task-item { padding: 6px 8px; margin-bottom: 4px; background: #f8f8f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .task-text { font-size: 0.8rem; }
-    .task-date { font-size: 0.65rem; }
-    .section { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-    .extra-sections { padding-bottom: 10px; }
-    .empty-msg { padding: 12px 0; font-size: 0.75rem; }
-    .attachment-chip { font-size: 0.65rem; padding: 2px 6px; }
-    .print-report-date {
-      display: block !important;
-      text-align: center;
-      font-size: 0.75rem;
-      color: #666;
-      padding: 6px 0 0;
+    #sync-status.show { opacity: 1; }
+    header { background: linear-gradient(135deg, var(--color-900) 0%, var(--color-700) 100%); color: var(--color-white); padding: 28px 32px 24px; text-align: center; position: relative; overflow: hidden; }
+    header::before { content: ''; position: absolute; top: -50%; left: -10%; width: 120%; height: 200%; background: radial-gradient(ellipse at 30% 50%, rgba(144,224,239,0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(202,240,248,0.1) 0%, transparent 60%); pointer-events: none; }
+    header h1 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.3px; position: relative; }
+    header p { font-size: 0.82rem; font-weight: 400; opacity: 0.5; margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; position: relative; }
+    .input-bar { background: var(--bg-card); padding: 14px 28px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(2,62,138,0.04), 0 4px 12px rgba(2,62,138,0.03); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-light); }
+    .input-bar input[type="text"] { flex: 1 1 280px; padding: 11px 16px; font-family: inherit; font-size: 0.92rem; border: 1.5px solid var(--border-light); border-radius: 10px; outline: none; background: var(--bg-input); transition: all 0.25s ease; color: var(--text-primary); }
+    .input-bar input[type="text"]::placeholder { color: var(--text-muted); }
+    .input-bar input[type="text"]:focus { border-color: var(--border-focus); background: var(--bg-card); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn { padding: 9px 20px; border: 1.5px solid var(--border-light); border-radius: 24px; background: var(--bg-input); font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; user-select: none; color: var(--text-accent); letter-spacing: 0.2px; }
+    .toggle-btn:hover { border-color: var(--border-focus); background: var(--bg-hover); }
+    .toggle-btn.active-urgent { background: linear-gradient(135deg, var(--color-900), var(--color-900-dark)); color: var(--color-white); border-color: transparent; box-shadow: 0 2px 8px rgba(2,62,138,0.35); }
+    .toggle-btn.active-important { background: linear-gradient(135deg, var(--color-700), var(--color-600)); color: var(--color-white); border-color: transparent; box-shadow: 0 2px 8px rgba(0,119,182,0.35); }
+    .add-btn { padding: 11px 28px; background: linear-gradient(135deg, var(--color-900), var(--color-700)); color: var(--color-white); border: none; border-radius: 10px; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; letter-spacing: 0.2px; }
+    .add-btn:hover { background: linear-gradient(135deg, var(--color-700), var(--color-600)); box-shadow: 0 4px 12px rgba(2,62,138,0.25); transform: translateY(-1px); }
+    .add-btn:active { transform: translateY(0); }
+    .quadrant-grid { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 20px 24px; max-width: 700px; margin: 0 auto; }
+    .quadrant { background: var(--bg-card); border-radius: 14px; min-height: 230px; box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04); display: flex; flex-direction: column; overflow: hidden; transition: box-shadow 0.3s ease; border: 1px solid rgba(0,119,182,0.08); }
+    .quadrant:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
+    .quadrant-header { padding: 14px 18px; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; display: flex; justify-content: space-between; align-items: center; }
+    .quadrant-header .count { background: rgba(255,255,255,0.25); padding: 3px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px); }
+    .quadrant-body { padding: 10px 14px 14px; flex: 1; overflow-y: auto; }
+    .q1 .quadrant-header { background: linear-gradient(135deg, var(--color-900), var(--color-900-dark)); color: var(--color-white); }
+    .q2 .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-600)); color: var(--color-white); }
+    .q3 .quadrant-header { background: linear-gradient(135deg, var(--color-600), var(--color-500)); color: var(--color-white); }
+    .q4 .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
+    .extra-sections { max-width: 700px; margin: 0 auto; padding: 0 24px 40px; display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .section { background: var(--bg-card); border-radius: 14px; min-height: 120px; box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04); display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,119,182,0.08); transition: box-shadow 0.3s ease; }
+    .section:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
+    .monitor .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-900)); color: var(--color-white); }
+    .completed .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
+    .task-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 8px; background: var(--bg-input); border-radius: 10px; border-left: 3px solid transparent; transition: all 0.2s ease; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .task-item:hover { background: var(--bg-hover); transform: translateX(2px); }
+    .q1 .task-item { border-left-color: var(--color-900); }
+    .q2 .task-item { border-left-color: var(--color-700); }
+    .q3 .task-item { border-left-color: var(--color-500); }
+    .q4 .task-item { border-left-color: var(--color-300); }
+    .monitor .task-item { border-left-color: var(--color-700); }
+    .completed .task-item { border-left-color: var(--color-400); opacity: 0.6; }
+    .completed .task-item .task-text { text-decoration: line-through; color: var(--color-300); }
+    .task-text { flex: 1; font-size: 0.88rem; font-weight: 450; line-height: 1.45; word-break: break-word; color: var(--text-primary); }
+    .task-date { font-size: 0.68rem; font-weight: 500; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.2px; }
+    .task-select { padding: 5px 8px; font-family: inherit; font-size: 0.74rem; font-weight: 500; border: 1.5px solid var(--border-light); border-radius: 8px; background: var(--bg-card); color: var(--text-accent); cursor: pointer; flex-shrink: 0; transition: all 0.2s ease; outline: none; }
+    .task-select:hover { border-color: var(--border-focus); }
+    .task-select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--focus-ring); }
+    .task-delete { background: none; border: none; color: var(--color-300); cursor: pointer; font-size: 1.15rem; padding: 2px 6px; border-radius: 6px; transition: all 0.2s ease; flex-shrink: 0; line-height: 1; }
+    .task-delete:hover { color: var(--text-primary); background: rgba(2,62,138,0.08); }
+    .toolbar { max-width: 700px; margin: 0 auto; padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+    .toolbar button { padding: 8px 18px; font-family: inherit; font-size: 0.78rem; font-weight: 600; border: 1.5px solid var(--border-light); border-radius: 8px; background: var(--bg-card); color: var(--text-accent); cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.2px; }
+    .toolbar button:hover { background: var(--bg-hover); border-color: var(--border-focus); color: var(--text-primary); }
+    .grid-wrapper { max-width: 700px; margin: 0 auto; padding: 0; }
+    .empty-msg { text-align: center; color: var(--color-300); font-size: 0.82rem; padding: 32px 0; font-weight: 500; }
+    @media (max-width: 700px) {
+      .input-bar { flex-direction: column; align-items: stretch; }
+      .input-bar input[type="text"] { flex: none; }
+      .toggle-group { justify-content: center; }
     }
-  }
-  .print-report-date { display: none; }
-
-  /* ── Responsive ── */
-  @media (max-width: 700px) {
-    .input-bar { flex-direction: column; align-items: stretch; }
-    .input-bar input[type="text"] { flex: none; }
-    .toggle-group { justify-content: center; }
-  }
-</style>
+  </style>
 </head>
 <body>
+  <header>
+    <h1>First Things First</h1>
+    <p>Covey Quadrant Task Manager</p>
+  </header>
 
-<header>
-  <h1>First Things First</h1>
-  <p>Covey Quadrant Task Manager</p>
-</header>
-<div class="print-report-date" id="printDate"></div>
-
-<div class="input-bar">
-  <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
-  <div class="toggle-group">
-    <button class="toggle-btn active-urgent" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
-    <button class="toggle-btn active-important" id="importantToggle" onclick="toggleImportant()">Important</button>
+  <div class="input-bar">
+    <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
+    <div class="toggle-group">
+      <button class="toggle-btn" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
+      <button class="toggle-btn" id="importantToggle" onclick="toggleImportant()">Important</button>
+    </div>
+    <button class="add-btn" onclick="addTask()">Add Task</button>
   </div>
-  <button class="add-btn" onclick="addTask()">Add Task</button>
-</div>
 
-<div class="grid-wrapper">
-  <div class="quadrant-grid">
-    <div class="quadrant q1" id="q1-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>I &mdash; Urgent &amp; Important</span>
-          <span class="header-subtitle">Do first &mdash; deadlines, crises, last-minute demands</span>
-        </div>
-        <span class="count" id="q1-count">0</span>
+  <div class="grid-wrapper">
+    <div class="quadrant-grid">
+      <div class="quadrant q1" id="q1-panel">
+        <div class="quadrant-header"><span>I &mdash; Urgent &amp; Important</span><span class="count" id="q1-count">0</span></div>
+        <div class="quadrant-body" id="q1-body"></div>
       </div>
-      <div class="quadrant-body" id="q1-body"></div>
-    </div>
-    <div class="quadrant q2" id="q2-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>II &mdash; Not Urgent &amp; Important</span>
-          <span class="header-subtitle">Schedule it &mdash; long-term goals, planning, growth</span>
-        </div>
-        <span class="count" id="q2-count">0</span>
+      <div class="quadrant q2" id="q2-panel">
+        <div class="quadrant-header"><span>II &mdash; Not Urgent &amp; Important</span><span class="count" id="q2-count">0</span></div>
+        <div class="quadrant-body" id="q2-body"></div>
       </div>
-      <div class="quadrant-body" id="q2-body"></div>
-    </div>
-    <div class="quadrant q3" id="q3-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>III &mdash; Urgent &amp; Not Important</span>
-          <span class="header-subtitle">Delegate it &mdash; interruptions, busywork, most emails</span>
-        </div>
-        <span class="count" id="q3-count">0</span>
+      <div class="quadrant q3" id="q3-panel">
+        <div class="quadrant-header"><span>III &mdash; Urgent &amp; Not Important</span><span class="count" id="q3-count">0</span></div>
+        <div class="quadrant-body" id="q3-body"></div>
       </div>
-      <div class="quadrant-body" id="q3-body"></div>
-    </div>
-    <div class="quadrant q4" id="q4-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>IV &mdash; Not Urgent &amp; Not Important</span>
-          <span class="header-subtitle">Eliminate it &mdash; distractions, time-wasters, procrastination</span>
-        </div>
-        <span class="count" id="q4-count">0</span>
+      <div class="quadrant q4" id="q4-panel">
+        <div class="quadrant-header"><span>IV &mdash; Not Urgent &amp; Not Important</span><span class="count" id="q4-count">0</span></div>
+        <div class="quadrant-body" id="q4-body"></div>
       </div>
-      <div class="quadrant-body" id="q4-body"></div>
     </div>
   </div>
-</div>
 
-<div class="extra-sections">
-  <div class="section monitor" id="monitor-panel">
-    <div class="quadrant-header">
-      <div class="header-left">
-        <span>Monitor</span>
-        <span class="header-subtitle">Keep an eye on &mdash; waiting on others, pending decisions</span>
-      </div>
-      <span class="count" id="monitor-count">0</span>
+  <div class="extra-sections">
+    <div class="section monitor" id="monitor-panel">
+      <div class="quadrant-header"><span>Monitor</span><span class="count" id="monitor-count">0</span></div>
+      <div class="quadrant-body" id="monitor-body"></div>
     </div>
-    <div class="quadrant-body" id="monitor-body"></div>
-  </div>
-  <div class="section completed" id="completed-panel">
-    <div class="quadrant-header">
-      <div class="header-left">
-        <span>Completed</span>
-        <span class="header-subtitle">Done &mdash; finished tasks and accomplishments</span>
-      </div>
-      <span class="count" id="completed-count">0</span>
+    <div class="section completed" id="completed-panel">
+      <div class="quadrant-header"><span>Completed</span><span class="count" id="completed-count">0</span></div>
+      <div class="quadrant-body" id="completed-body"></div>
     </div>
-    <div class="quadrant-body" id="completed-body"></div>
   </div>
-</div>
 
-<div class="toolbar">
-  <button onclick="printReport()">Print Report</button>
-  <button onclick="exportJSON()">Export JSON</button>
-  <button onclick="document.getElementById('importFile').click()">Import JSON</button>
-  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-</div>
-<input type="file" id="attachFile" style="display:none" multiple onchange="handleAttachFile(event)">
+  <div class="toolbar">
+    <button onclick="exportJSON()">Export JSON</button>
+    <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
 
-<script>
-  const STORAGE_KEY = 'covey_tasks';
-  let tasks = [];
-  let isUrgent = true;
-  let isImportant = true;
+  <div id="sync-status">Syncing...</div>
 
-  function init() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try { tasks = JSON.parse(saved); } catch(e) { tasks = []; }
-    }
-    render();
-    document.getElementById('taskInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') addTask();
-    });
-  }
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, collection, doc, setDoc, deleteDoc,
+      onSnapshot, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }
-
-  function getQuadrant(urgent, important) {
-    if (urgent && important) return 'q1';
-    if (!urgent && important) return 'q2';
-    if (urgent && !important) return 'q3';
-    return 'q4';
-  }
-
-  function toggleUrgent() {
-    isUrgent = !isUrgent;
-    document.getElementById('urgentToggle').classList.toggle('active-urgent', isUrgent);
-  }
-
-  function toggleImportant() {
-    isImportant = !isImportant;
-    document.getElementById('importantToggle').classList.toggle('active-important', isImportant);
-  }
-
-  function addTask() {
-    const input = document.getElementById('taskInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    const quadrant = getQuadrant(isUrgent, isImportant);
-    tasks.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      text: text,
-      quadrant: quadrant,
-      createdAt: new Date().toISOString(),
-      completedAt: null,
-      attachments: []
-    });
-
-    input.value = '';
-    isUrgent = true;
-    isImportant = true;
-    document.getElementById('urgentToggle').classList.add('active-urgent');
-    document.getElementById('importantToggle').classList.add('active-important');
-    input.focus();
-
-    save();
-    render();
-  }
-
-  function moveTask(taskId, newQuadrant) {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
-    task.quadrant = newQuadrant;
-    if (newQuadrant === 'completed') {
-      task.completedAt = new Date().toISOString();
-    } else {
-      task.completedAt = null;
-    }
-    save();
-    render();
-  }
-
-  function deleteTask(taskId) {
-    tasks = tasks.filter(t => t.id !== taskId);
-    save();
-    render();
-  }
-
-  function formatDate(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-
-  let pendingAttachTaskId = null;
-
-  function buildTaskEl(task) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'task-item-wrapper';
-
-    const div = document.createElement('div');
-    div.className = 'task-item';
-
-    const textSpan = document.createElement('span');
-    textSpan.className = 'task-text';
-    textSpan.textContent = task.text;
-
-    const dateSpan = document.createElement('span');
-    dateSpan.className = 'task-date';
-    dateSpan.textContent = formatDate(task.createdAt);
-
-    const attachBtn = document.createElement('button');
-    attachBtn.className = 'task-attach-btn';
-    attachBtn.innerHTML = '&#128206;';
-    attachBtn.title = 'Attach file';
-    attachBtn.addEventListener('click', function() {
-      pendingAttachTaskId = task.id;
-      document.getElementById('attachFile').click();
-    });
-
-    const select = document.createElement('select');
-    select.className = 'task-select';
-    const options = [
-      { value: 'q1', label: 'I - Urgent & Important' },
-      { value: 'q2', label: 'II - Not Urgent & Important' },
-      { value: 'q3', label: 'III - Urgent & Not Important' },
-      { value: 'q4', label: 'IV - Not Urgent & Not Important' },
-      { value: 'monitor', label: 'Monitor' },
-      { value: 'completed', label: 'Completed' }
-    ];
-    options.forEach(opt => {
-      const o = document.createElement('option');
-      o.value = opt.value;
-      o.textContent = opt.label;
-      if (opt.value === task.quadrant) o.selected = true;
-      select.appendChild(o);
-    });
-    select.addEventListener('change', function() {
-      moveTask(task.id, this.value);
-    });
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'task-delete';
-    delBtn.innerHTML = '&times;';
-    delBtn.title = 'Delete task';
-    delBtn.addEventListener('click', function() { deleteTask(task.id); });
-
-    div.appendChild(textSpan);
-    div.appendChild(dateSpan);
-    div.appendChild(attachBtn);
-    div.appendChild(select);
-    div.appendChild(delBtn);
-    wrapper.appendChild(div);
-
-    const attachments = task.attachments || [];
-    if (attachments.length > 0) {
-      const attDiv = document.createElement('div');
-      attDiv.className = 'task-attachments';
-      attachments.forEach((att, idx) => {
-        const chip = document.createElement('span');
-        chip.className = 'attachment-chip';
-        chip.title = att.name;
-
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'att-name';
-        nameSpan.textContent = att.name;
-        chip.appendChild(nameSpan);
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'att-remove';
-        removeBtn.innerHTML = '&times;';
-        removeBtn.title = 'Remove attachment';
-        removeBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          removeAttachment(task.id, idx);
-        });
-        chip.appendChild(removeBtn);
-
-        chip.addEventListener('click', function() {
-          downloadAttachment(att);
-        });
-
-        attDiv.appendChild(chip);
-      });
-      wrapper.appendChild(attDiv);
-    }
-
-    return wrapper;
-  }
-
-  function render() {
-    const buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
-    tasks.forEach(t => {
-      if (buckets[t.quadrant]) buckets[t.quadrant].push(t);
-    });
-
-    Object.keys(buckets).forEach(key => {
-      const body = document.getElementById(key + '-body');
-      const countEl = document.getElementById(key + '-count');
-      body.innerHTML = '';
-      countEl.textContent = buckets[key].length;
-
-      if (buckets[key].length === 0) {
-        const msg = document.createElement('div');
-        msg.className = 'empty-msg';
-        const hints = {
-          q1: '<span class="empty-title">No tasks here</span>Tasks with deadlines or consequences for delay.<br><span class="empty-examples">e.g. Pay bills, fix urgent bug, doctor appointment tomorrow</span>',
-          q2: '<span class="empty-title">No tasks here</span>Long-term goals that need consistent progress. Don\'t procrastinate these!<br><span class="empty-examples">e.g. Write a book, develop marketing strategy, learn a new skill</span>',
-          q3: '<span class="empty-title">No tasks here</span>Busywork that feels urgent but doesn\'t move you forward. Delegate if you can.<br><span class="empty-examples">e.g. Schedule appointments, reply to routine emails, update spreadsheets</span>',
-          q4: '<span class="empty-title">No tasks here</span>Distractions that steal your time. Be honest about how much time you spend here.<br><span class="empty-examples">e.g. Excessive social media, unnecessary meetings, binge-watching</span>',
-          monitor: '<span class="empty-title">Nothing to monitor</span>Park tasks here that are waiting on someone else or a future decision.',
-          completed: '<span class="empty-title">No completed tasks yet</span>Move tasks here when they\'re done to track your progress.'
-        };
-        msg.innerHTML = hints[key] || 'No tasks here';
-        body.appendChild(msg);
-      } else {
-        buckets[key].forEach(task => {
-          body.appendChild(buildTaskEl(task));
-        });
-      }
-    });
-  }
-
-  function handleAttachFile(event) {
-    const files = event.target.files;
-    if (!files.length || !pendingAttachTaskId) { event.target.value = ''; return; }
-    const task = tasks.find(t => t.id === pendingAttachTaskId);
-    if (!task) { event.target.value = ''; return; }
-    if (!task.attachments) task.attachments = [];
-
-    let remaining = files.length;
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        task.attachments.push({
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          data: e.target.result
-        });
-        remaining--;
-        if (remaining === 0) {
-          pendingAttachTaskId = null;
-          save();
-          render();
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-    event.target.value = '';
-  }
-
-  function removeAttachment(taskId, attachIdx) {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task || !task.attachments) return;
-    task.attachments.splice(attachIdx, 1);
-    save();
-    render();
-  }
-
-  function downloadAttachment(att) {
-    const a = document.createElement('a');
-    a.href = att.data;
-    a.download = att.name;
-    a.click();
-  }
-
-  function printReport() {
-    const dateEl = document.getElementById('printDate');
-    dateEl.textContent = 'Report generated: ' + new Date().toLocaleDateString('en-US', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-    window.print();
-  }
-
-  function exportJSON() {
-    const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'covey-tasks.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  function importJSON(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const imported = JSON.parse(e.target.result);
-        if (Array.isArray(imported)) {
-          tasks = imported;
-          save();
-          render();
-        }
-      } catch(err) {
-        alert('Invalid JSON file');
-      }
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDC1BjHMCuMRxMwLp2bdgY8820Xf8U6Mw",
+      authDomain: "covey-todo-b3ef9.firebaseapp.com",
+      projectId: "covey-todo-b3ef9",
+      storageBucket: "covey-todo-b3ef9.firebasestorage.app",
+      messagingSenderId: "829811005116",
+      appId: "1:829811005116:web:ed188642a1bff4797762b9"
     };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
 
-  init();
-</script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const tasksCol = collection(db, "tasks");
+
+    let tasks = [];
+    let isUrgent = false;
+    let isImportant = false;
+    let syncTimer = null;
+
+    function showSync(msg) {
+      const el = document.getElementById('sync-status');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => el.classList.remove('show'), 2000);
+    }
+
+    const q = query(tasksCol, orderBy("createdAt"));
+    onSnapshot(q, (snapshot) => {
+      tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      render();
+    });
+
+    function getQuadrant(urgent, important) {
+      if (urgent && important) return 'q1';
+      if (!urgent && important) return 'q2';
+      if (urgent && !important) return 'q3';
+      return 'q4';
+    }
+
+    window.toggleUrgent = function() {
+      isUrgent = !isUrgent;
+      document.getElementById('urgentToggle').classList.toggle('active-urgent', isUrgent);
+    };
+
+    window.toggleImportant = function() {
+      isImportant = !isImportant;
+      document.getElementById('importantToggle').classList.toggle('active-important', isImportant);
+    };
+
+    window.addTask = async function() {
+      const input = document.getElementById('taskInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const quadrant = getQuadrant(isUrgent, isImportant);
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      const task = { text, quadrant, createdAt: new Date().toISOString(), completedAt: null };
+      input.value = '';
+      isUrgent = false; isImportant = false;
+      document.getElementById('urgentToggle').classList.remove('active-urgent');
+      document.getElementById('importantToggle').classList.remove('active-important');
+      input.focus();
+      showSync('Saving...');
+      await setDoc(doc(tasksCol, id), task);
+      showSync('Saved ✓');
+    };
+
+    async function moveTask(taskId, newQuadrant) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const updated = { ...task, quadrant: newQuadrant, completedAt: newQuadrant === 'completed' ? new Date().toISOString() : null };
+      delete updated.id;
+      showSync('Saving...');
+      await setDoc(doc(tasksCol, taskId), updated);
+      showSync('Saved ✓');
+    }
+
+    window.deleteTask = async function(taskId) {
+      showSync('Deleting...');
+      await deleteDoc(doc(tasksCol, taskId));
+      showSync('Deleted ✓');
+    };
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function buildTaskEl(task) {
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      const textSpan = document.createElement('span');
+      textSpan.className = 'task-text';
+      textSpan.textContent = task.text;
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'task-date';
+      dateSpan.textContent = formatDate(task.createdAt);
+      const select = document.createElement('select');
+      select.className = 'task-select';
+      [
+        { value: 'q1', label: 'I - Urgent & Important' },
+        { value: 'q2', label: 'II - Not Urgent & Important' },
+        { value: 'q3', label: 'III - Urgent & Not Important' },
+        { value: 'q4', label: 'IV - Not Urgent & Not Important' },
+        { value: 'monitor', label: 'Monitor' },
+        { value: 'completed', label: 'Completed' }
+      ].forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt.value; o.textContent = opt.label;
+        if (opt.value === task.quadrant) o.selected = true;
+        select.appendChild(o);
+      });
+      select.addEventListener('change', function() { moveTask(task.id, this.value); });
+      const delBtn = document.createElement('button');
+      delBtn.className = 'task-delete';
+      delBtn.innerHTML = '&times;';
+      delBtn.title = 'Delete task';
+      delBtn.addEventListener('click', () => window.deleteTask(task.id));
+      div.appendChild(textSpan);
+      div.appendChild(dateSpan);
+      div.appendChild(select);
+      div.appendChild(delBtn);
+      return div;
+    }
+
+    function render() {
+      const buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
+      tasks.forEach(t => { if (buckets[t.quadrant]) buckets[t.quadrant].push(t); });
+      Object.keys(buckets).forEach(key => {
+        const body = document.getElementById(key + '-body');
+        const countEl = document.getElementById(key + '-count');
+        body.innerHTML = '';
+        countEl.textContent = buckets[key].length;
+        if (buckets[key].length === 0) {
+          const msg = document.createElement('div');
+          msg.className = 'empty-msg';
+          msg.textContent = key === 'completed' ? 'No completed tasks yet' : 'No tasks here';
+          body.appendChild(msg);
+        } else {
+          buckets[key].forEach(task => body.appendChild(buildTaskEl(task)));
+        }
+      });
+    }
+
+    window.exportJSON = function() {
+      const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'covey-tasks.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    window.importJSON = async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            showSync('Importing...');
+            for (const task of imported) {
+              const { id, ...data } = task;
+              await setDoc(doc(tasksCol, id || (Date.now().toString(36) + Math.random().toString(36).slice(2,5))), data);
+            }
+            showSync('Imported ✓');
+          }
+        } catch(err) { alert('Invalid JSON file'); }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    };
+
+    document.getElementById('taskInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') window.addTask();
+    });
+  </script>
 </body>
 </html>
