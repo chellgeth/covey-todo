@@ -166,10 +166,10 @@
   /* ── Quadrant Grid ── */
   .quadrant-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
     padding: 20px 24px;
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
   }
 
@@ -218,11 +218,11 @@
 
   /* ── Extra Sections ── */
   .extra-sections {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 0 24px 40px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
   }
   .section {
@@ -313,7 +313,7 @@
 
   /* ── Toolbar ── */
   .toolbar {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 0 24px 20px;
     display: flex;
@@ -335,46 +335,10 @@
   }
   .toolbar button:hover { background: var(--bg-hover); border-color: var(--border-focus); color: var(--text-primary); }
 
-  /* ── Axis Labels ── */
   .grid-wrapper {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 0 24px 0;
-    position: relative;
-  }
-  .axis-labels-top {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    padding: 16px 0 8px;
-    text-align: center;
-  }
-  .axis-labels-top span {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-  }
-  .row-labels {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    position: absolute;
-    left: 2px;
-    top: 40px;
-    bottom: 0;
-    pointer-events: none;
-  }
-  .row-label {
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-align: center;
+    padding: 0;
   }
 
   .empty-msg {
@@ -387,11 +351,9 @@
 
   /* ── Responsive ── */
   @media (max-width: 700px) {
-    .quadrant-grid, .extra-sections { grid-template-columns: 1fr; }
     .input-bar { flex-direction: column; align-items: stretch; }
     .input-bar input[type="text"] { flex: none; }
     .toggle-group { justify-content: center; }
-    .axis-labels-top, .row-labels { display: none; }
   }
 </style>
 </head>
@@ -412,15 +374,7 @@
 </div>
 
 <div class="grid-wrapper">
-  <div class="axis-labels-top">
-    <span>Urgent</span>
-    <span>Not Urgent</span>
-  </div>
-  <div class="row-labels">
-    <span class="row-label">Important</span>
-    <span class="row-label">Not Important</span>
-  </div>
-  <div class="quadrant-grid" style="padding-left:24px;">
+  <div class="quadrant-grid">
     <div class="quadrant q1" id="q1-panel">
       <div class="quadrant-header">
         <span>I &mdash; Urgent &amp; Important</span>
