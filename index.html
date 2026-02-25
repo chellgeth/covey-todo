@@ -194,7 +194,20 @@
     letter-spacing: 0.8px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+  }
+  .quadrant-header .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .quadrant-header .header-subtitle {
+    font-size: 0.68rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0.1px;
+    opacity: 0.8;
+    line-height: 1.35;
   }
   .quadrant-header .count {
     background: rgba(255,255,255,0.25);
@@ -203,6 +216,8 @@
     font-size: 0.75rem;
     font-weight: 700;
     backdrop-filter: blur(4px);
+    flex-shrink: 0;
+    margin-top: 1px;
   }
   .quadrant-body {
     padding: 10px 14px 14px;
@@ -343,10 +358,24 @@
 
   .empty-msg {
     text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 24px 16px;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .empty-msg .empty-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
     color: var(--color-300);
     font-size: 0.82rem;
-    padding: 32px 0;
-    font-weight: 500;
+  }
+  .empty-msg .empty-examples {
+    font-size: 0.73rem;
+    font-weight: 400;
+    font-style: italic;
+    opacity: 0.8;
   }
 
   /* ── Attachment Styles ── */
@@ -427,6 +456,7 @@
       padding: 8px 14px;
       font-size: 0.72rem;
     }
+    .quadrant-header .header-subtitle { font-size: 0.6rem; }
     .quadrant-body { padding: 8px 10px; }
     .task-item { padding: 6px 8px; margin-bottom: 4px; background: #f8f8f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .task-text { font-size: 0.8rem; }
@@ -474,28 +504,40 @@
   <div class="quadrant-grid">
     <div class="quadrant q1" id="q1-panel">
       <div class="quadrant-header">
-        <span>I &mdash; Urgent &amp; Important</span>
+        <div class="header-left">
+          <span>I &mdash; Urgent &amp; Important</span>
+          <span class="header-subtitle">Do first &mdash; deadlines, crises, last-minute demands</span>
+        </div>
         <span class="count" id="q1-count">0</span>
       </div>
       <div class="quadrant-body" id="q1-body"></div>
     </div>
     <div class="quadrant q2" id="q2-panel">
       <div class="quadrant-header">
-        <span>II &mdash; Not Urgent &amp; Important</span>
+        <div class="header-left">
+          <span>II &mdash; Not Urgent &amp; Important</span>
+          <span class="header-subtitle">Schedule it &mdash; long-term goals, planning, growth</span>
+        </div>
         <span class="count" id="q2-count">0</span>
       </div>
       <div class="quadrant-body" id="q2-body"></div>
     </div>
     <div class="quadrant q3" id="q3-panel">
       <div class="quadrant-header">
-        <span>III &mdash; Urgent &amp; Not Important</span>
+        <div class="header-left">
+          <span>III &mdash; Urgent &amp; Not Important</span>
+          <span class="header-subtitle">Delegate it &mdash; interruptions, busywork, most emails</span>
+        </div>
         <span class="count" id="q3-count">0</span>
       </div>
       <div class="quadrant-body" id="q3-body"></div>
     </div>
     <div class="quadrant q4" id="q4-panel">
       <div class="quadrant-header">
-        <span>IV &mdash; Not Urgent &amp; Not Important</span>
+        <div class="header-left">
+          <span>IV &mdash; Not Urgent &amp; Not Important</span>
+          <span class="header-subtitle">Eliminate it &mdash; distractions, time-wasters, procrastination</span>
+        </div>
         <span class="count" id="q4-count">0</span>
       </div>
       <div class="quadrant-body" id="q4-body"></div>
@@ -506,14 +548,20 @@
 <div class="extra-sections">
   <div class="section monitor" id="monitor-panel">
     <div class="quadrant-header">
-      <span>Monitor</span>
+      <div class="header-left">
+        <span>Monitor</span>
+        <span class="header-subtitle">Keep an eye on &mdash; waiting on others, pending decisions</span>
+      </div>
       <span class="count" id="monitor-count">0</span>
     </div>
     <div class="quadrant-body" id="monitor-body"></div>
   </div>
   <div class="section completed" id="completed-panel">
     <div class="quadrant-header">
-      <span>Completed</span>
+      <div class="header-left">
+        <span>Completed</span>
+        <span class="header-subtitle">Done &mdash; finished tasks and accomplishments</span>
+      </div>
       <span class="count" id="completed-count">0</span>
     </div>
     <div class="quadrant-body" id="completed-body"></div>
@@ -727,7 +775,15 @@
       if (buckets[key].length === 0) {
         const msg = document.createElement('div');
         msg.className = 'empty-msg';
-        msg.textContent = key === 'completed' ? 'No completed tasks yet' : 'No tasks here';
+        const hints = {
+          q1: '<span class="empty-title">No tasks here</span>Tasks with deadlines or consequences for delay.<br><span class="empty-examples">e.g. Pay bills, fix urgent bug, doctor appointment tomorrow</span>',
+          q2: '<span class="empty-title">No tasks here</span>Long-term goals that need consistent progress. Don\'t procrastinate these!<br><span class="empty-examples">e.g. Write a book, develop marketing strategy, learn a new skill</span>',
+          q3: '<span class="empty-title">No tasks here</span>Busywork that feels urgent but doesn\'t move you forward. Delegate if you can.<br><span class="empty-examples">e.g. Schedule appointments, reply to routine emails, update spreadsheets</span>',
+          q4: '<span class="empty-title">No tasks here</span>Distractions that steal your time. Be honest about how much time you spend here.<br><span class="empty-examples">e.g. Excessive social media, unnecessary meetings, binge-watching</span>',
+          monitor: '<span class="empty-title">Nothing to monitor</span>Park tasks here that are waiting on someone else or a future decision.',
+          completed: '<span class="empty-title">No completed tasks yet</span>Move tasks here when they\'re done to track your progress.'
+        };
+        msg.innerHTML = hints[key] || 'No tasks here';
         body.appendChild(msg);
       } else {
         buckets[key].forEach(task => {
