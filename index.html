@@ -21,8 +21,6 @@
       --shadow-hover: rgba(2,62,138,0.07); --focus-ring: rgba(0,119,182,0.12);
     }
     body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; }
-    #sync-status { position: fixed; bottom: 16px; right: 16px; background: var(--color-900); color: var(--color-white); padding: 8px 16px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; opacity: 0; transition: opacity 0.4s ease; z-index: 999; pointer-events: none; }
-    #sync-status.show { opacity: 1; }
     header { background: linear-gradient(135deg,var(--color-900) 0%,var(--color-700) 100%); color: var(--color-white); padding: 28px 32px 24px; text-align: center; position: relative; overflow: hidden; }
     header::before { content:''; position: absolute; top:-50%; left:-10%; width:120%; height:200%; background: radial-gradient(ellipse at 30% 50%,rgba(144,224,239,.15) 0%,transparent 60%), radial-gradient(ellipse at 70% 50%,rgba(202,240,248,.1) 0%,transparent 60%); pointer-events: none; }
     header h1 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.3px; position: relative; }
@@ -90,7 +88,7 @@
     .empty-msg .empty-examples { font-size: 0.73rem; font-weight: 400; font-style: italic; opacity: .8; }
     @media print {
       body { background: #fff; }
-      .input-bar, .toolbar, .task-select, .task-delete, .task-attach-btn, .attachment-chip .att-remove, #sync-status { display: none !important; }
+      .input-bar, .toolbar, .task-select, .task-delete, .task-attach-btn, .attachment-chip .att-remove { display: none !important; }
       header { background: var(--color-900) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 16px 24px; }
       header h1 { font-size: 1.3rem; } header p { font-size: 0.7rem; }
       .grid-wrapper, .extra-sections { max-width: 100%; padding: 10px 16px; }
@@ -202,44 +200,27 @@
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
   <input type="file" id="attachFile" style="display:none" multiple onchange="handleAttachFile(event)">
-  <div id="sync-status">Syncing...</div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDC1BjHMCuMRxMwLp2bdgY8820Xf8U6Mw",
-      authDomain: "covey-todo-b3ef9.firebaseapp.com",
-      projectId: "covey-todo-b3ef9",
-      storageBucket: "covey-todo-b3ef9.firebasestorage.app",
-      messagingSenderId: "829811005116",
-      appId: "1:829811005116:web:ed188642a1bff4797762b9"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const tasksCol = collection(db, "tasks");
-
+  <script>
+    const STORAGE_KEY = 'covey_tasks';
     let tasks = [];
     let isUrgent = true;
     let isImportant = true;
-    let syncTimer = null;
     let pendingAttachTaskId = null;
 
-    function showSync(msg) {
-      const el = document.getElementById('sync-status');
-      el.textContent = msg;
-      el.classList.add('show');
-      clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => el.classList.remove('show'), 2000);
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
 
-    const q = query(tasksCol, orderBy("createdAt"));
-    onSnapshot(q, (snapshot) => {
-      tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    function init() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { tasks = JSON.parse(saved); } catch(e) { tasks = []; }
+      }
       render();
-    });
+      document.getElementById('taskInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') addTask();
+      });
+    }
 
     function getQuadrant(urgent, important) {
       if (urgent && important) return 'q1';
@@ -248,47 +229,52 @@
       return 'q4';
     }
 
-    window.toggleUrgent = function() {
+    function toggleUrgent() {
       isUrgent = !isUrgent;
       document.getElementById('urgentToggle').classList.toggle('active-urgent', isUrgent);
-    };
-    window.toggleImportant = function() {
+    }
+
+    function toggleImportant() {
       isImportant = !isImportant;
       document.getElementById('importantToggle').classList.toggle('active-important', isImportant);
-    };
+    }
 
-    window.addTask = async function() {
+    function addTask() {
       const input = document.getElementById('taskInput');
       const text = input.value.trim();
       if (!text) return;
       const quadrant = getQuadrant(isUrgent, isImportant);
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-      const task = { text, quadrant, createdAt: new Date().toISOString(), completedAt: null, attachments: [] };
+      tasks.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        text: text,
+        quadrant: quadrant,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+        attachments: []
+      });
       input.value = '';
       isUrgent = true; isImportant = true;
       document.getElementById('urgentToggle').classList.add('active-urgent');
       document.getElementById('importantToggle').classList.add('active-important');
       input.focus();
-      showSync('Saving...');
-      await setDoc(doc(tasksCol, id), task);
-      showSync('Saved ✓');
-    };
-
-    async function moveTask(taskId, newQuadrant) {
-      const task = tasks.find(t => t.id === taskId);
-      if (!task) return;
-      const updated = { ...task, quadrant: newQuadrant, completedAt: newQuadrant === 'completed' ? new Date().toISOString() : null };
-      delete updated.id;
-      showSync('Saving...');
-      await setDoc(doc(tasksCol, taskId), updated);
-      showSync('Saved ✓');
+      save();
+      render();
     }
 
-    window.deleteTask = async function(taskId) {
-      showSync('Deleting...');
-      await deleteDoc(doc(tasksCol, taskId));
-      showSync('Deleted ✓');
-    };
+    function moveTask(taskId, newQuadrant) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.quadrant = newQuadrant;
+      task.completedAt = newQuadrant === 'completed' ? new Date().toISOString() : null;
+      save();
+      render();
+    }
+
+    function deleteTask(taskId) {
+      tasks = tasks.filter(t => t.id !== taskId);
+      save();
+      render();
+    }
 
     function formatDate(iso) {
       const d = new Date(iso);
@@ -334,7 +320,7 @@
       delBtn.className = 'task-delete';
       delBtn.innerHTML = '&times;';
       delBtn.title = 'Delete task';
-      delBtn.addEventListener('click', () => window.deleteTask(task.id));
+      delBtn.addEventListener('click', function() { deleteTask(task.id); });
       div.appendChild(textSpan); div.appendChild(dateSpan);
       div.appendChild(attachBtn); div.appendChild(select); div.appendChild(delBtn);
       wrapper.appendChild(div);
@@ -342,7 +328,7 @@
       if (attachments.length > 0) {
         const attDiv = document.createElement('div');
         attDiv.className = 'task-attachments';
-        attachments.forEach((att, idx) => {
+        attachments.forEach(function(att, idx) {
           const chip = document.createElement('span');
           chip.className = 'attachment-chip';
           chip.title = att.name;
@@ -359,7 +345,7 @@
             removeAttachment(task.id, idx);
           });
           chip.appendChild(removeBtn);
-          chip.addEventListener('click', () => downloadAttachment(att));
+          chip.addEventListener('click', function() { downloadAttachment(att); });
           attDiv.appendChild(chip);
         });
         wrapper.appendChild(attDiv);
@@ -367,112 +353,103 @@
       return wrapper;
     }
 
-    const emptyHints = {
+    var emptyHints = {
       q1: '<span class="empty-title">No tasks here</span>Tasks with deadlines or consequences for delay.<br><span class="empty-examples">e.g. Pay bills, fix urgent bug, doctor appointment tomorrow</span>',
       q2: '<span class="empty-title">No tasks here</span>Long-term goals that need consistent progress.<br><span class="empty-examples">e.g. Write a book, develop marketing strategy, learn a new skill</span>',
-      q3: '<span class="empty-title">No tasks here</span>Busywork that feels urgent but doesn't move you forward.<br><span class="empty-examples">e.g. Schedule appointments, reply to routine emails, update spreadsheets</span>',
+      q3: '<span class="empty-title">No tasks here</span>Busywork that feels urgent but doesn\'t move you forward.<br><span class="empty-examples">e.g. Schedule appointments, reply to routine emails, update spreadsheets</span>',
       q4: '<span class="empty-title">No tasks here</span>Distractions that steal your time.<br><span class="empty-examples">e.g. Excessive social media, unnecessary meetings, binge-watching</span>',
       monitor: '<span class="empty-title">Nothing to monitor</span>Park tasks here waiting on someone else or a future decision.',
-      completed: '<span class="empty-title">No completed tasks yet</span>Move tasks here when they're done to track your progress.'
+      completed: '<span class="empty-title">No completed tasks yet</span>Move tasks here when they\'re done to track your progress.'
     };
 
     function render() {
-      const buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
-      tasks.forEach(t => { if (buckets[t.quadrant]) buckets[t.quadrant].push(t); });
-      Object.keys(buckets).forEach(key => {
-        const body = document.getElementById(key + '-body');
-        const countEl = document.getElementById(key + '-count');
+      var buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
+      tasks.forEach(function(t) { if (buckets[t.quadrant]) buckets[t.quadrant].push(t); });
+      Object.keys(buckets).forEach(function(key) {
+        var body = document.getElementById(key + '-body');
+        var countEl = document.getElementById(key + '-count');
         body.innerHTML = '';
         countEl.textContent = buckets[key].length;
         if (buckets[key].length === 0) {
-          const msg = document.createElement('div');
+          var msg = document.createElement('div');
           msg.className = 'empty-msg';
           msg.innerHTML = emptyHints[key] || 'No tasks here';
           body.appendChild(msg);
         } else {
-          buckets[key].forEach(task => body.appendChild(buildTaskEl(task)));
+          buckets[key].forEach(function(task) { body.appendChild(buildTaskEl(task)); });
         }
       });
     }
 
-    window.handleAttachFile = async function(event) {
-      const files = event.target.files;
+    function handleAttachFile(event) {
+      var files = event.target.files;
       if (!files.length || !pendingAttachTaskId) { event.target.value = ''; return; }
-      const task = tasks.find(t => t.id === pendingAttachTaskId);
+      var task = tasks.find(function(t) { return t.id === pendingAttachTaskId; });
       if (!task) { event.target.value = ''; return; }
       if (!task.attachments) task.attachments = [];
-      let remaining = files.length;
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
+      var remaining = files.length;
+      Array.from(files).forEach(function(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
           task.attachments.push({ name: file.name, type: file.type, size: file.size, data: e.target.result });
           remaining--;
           if (remaining === 0) {
             pendingAttachTaskId = null;
-            const { id, ...data } = task;
-            showSync('Saving...');
-            await setDoc(doc(tasksCol, id), data);
-            showSync('Saved ✓');
+            save();
+            render();
           }
         };
         reader.readAsDataURL(file);
       });
       event.target.value = '';
-    };
+    }
 
-    async function removeAttachment(taskId, attachIdx) {
-      const task = tasks.find(t => t.id === taskId);
+    function removeAttachment(taskId, attachIdx) {
+      var task = tasks.find(function(t) { return t.id === taskId; });
       if (!task || !task.attachments) return;
       task.attachments.splice(attachIdx, 1);
-      const { id, ...data } = task;
-      showSync('Saving...');
-      await setDoc(doc(tasksCol, taskId), data);
-      showSync('Saved ✓');
+      save();
+      render();
     }
 
     function downloadAttachment(att) {
-      const a = document.createElement('a');
+      var a = document.createElement('a');
       a.href = att.data; a.download = att.name; a.click();
     }
 
-    window.printReport = function() {
-      const dateEl = document.getElementById('printDate');
+    function printReport() {
+      var dateEl = document.getElementById('printDate');
       dateEl.textContent = 'Report generated: ' + new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
       window.print();
-    };
+    }
 
-    window.exportJSON = function() {
-      const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
+    function exportJSON() {
+      var blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'covey-tasks.json'; a.click();
       URL.revokeObjectURL(a.href);
-    };
+    }
 
-    window.importJSON = async function(event) {
-      const file = event.target.files[0];
+    function importJSON(event) {
+      var file = event.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async function(e) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
         try {
-          const imported = JSON.parse(e.target.result);
+          var imported = JSON.parse(e.target.result);
           if (Array.isArray(imported)) {
-            showSync('Importing...');
-            for (const task of imported) {
-              const { id, ...data } = task;
-              await setDoc(doc(tasksCol, id || (Date.now().toString(36) + Math.random().toString(36).slice(2,5))), data);
-            }
-            showSync('Imported ✓');
+            tasks = imported;
+            save();
+            render();
           }
         } catch(err) { alert('Invalid JSON file'); }
       };
       reader.readAsText(file);
       event.target.value = '';
-    };
+    }
 
-    document.getElementById('taskInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') window.addTask();
-    });
+    init();
   </script>
 </body>
 </html>
