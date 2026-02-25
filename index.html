@@ -9,17 +9,46 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    /* ── Color Palette ── */
+    --color-900: #023E8A;
+    --color-900-dark: #01337a;
+    --color-700: #0077B6;
+    --color-600: #0096C7;
+    --color-500: #00B4D8;
+    --color-400: #48CAE4;
+    --color-300: #90E0EF;
+    --color-100: #CAF0F8;
+    --color-50: #f0fafe;
+    --color-hover: #e0f7fc;
+    --color-white: #fff;
+
+    /* ── Semantic Aliases ── */
+    --bg-page: var(--color-100);
+    --bg-card: var(--color-white);
+    --bg-input: var(--color-50);
+    --bg-hover: var(--color-hover);
+    --text-primary: var(--color-900);
+    --text-accent: var(--color-700);
+    --text-muted: rgba(0, 119, 182, 0.6);
+    --border-light: var(--color-300);
+    --border-focus: var(--color-700);
+    --shadow-base: rgba(2, 62, 138, 0.05);
+    --shadow-hover: rgba(2, 62, 138, 0.07);
+    --focus-ring: rgba(0, 119, 182, 0.12);
+  }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f4f5f7;
-    color: #1e293b;
+    background: var(--bg-page);
+    color: var(--text-primary);
     min-height: 100vh;
   }
 
   /* ── Header ── */
   header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-900) 0%, var(--color-700) 100%);
+    color: var(--color-white);
     padding: 28px 32px 24px;
     text-align: center;
     position: relative;
@@ -32,8 +61,8 @@
     left: -10%;
     width: 120%;
     height: 200%;
-    background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.12) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 50%, rgba(244,114,82,0.08) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 30% 50%, rgba(144,224,239,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(202,240,248,0.1) 0%, transparent 60%);
     pointer-events: none;
   }
   header h1 {
@@ -54,70 +83,70 @@
 
   /* ── Task Input Bar ── */
   .input-bar {
-    background: #fff;
+    background: var(--bg-card);
     padding: 14px 28px;
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(2,62,138,0.04), 0 4px 12px rgba(2,62,138,0.03);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid #e8eaed;
+    border-bottom: 1px solid var(--border-light);
   }
   .input-bar input[type="text"] {
     flex: 1 1 280px;
     padding: 11px 16px;
     font-family: inherit;
     font-size: 0.92rem;
-    border: 1.5px solid #e2e5e9;
+    border: 1.5px solid var(--border-light);
     border-radius: 10px;
     outline: none;
-    background: #f8f9fb;
+    background: var(--bg-input);
     transition: all 0.25s ease;
-    color: #1e293b;
+    color: var(--text-primary);
   }
-  .input-bar input[type="text"]::placeholder { color: #94a3b8; }
+  .input-bar input[type="text"]::placeholder { color: var(--text-muted); }
   .input-bar input[type="text"]:focus {
-    border-color: #6366f1;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    border-color: var(--border-focus);
+    background: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
 
   .toggle-group { display: flex; gap: 8px; }
   .toggle-btn {
     padding: 9px 20px;
-    border: 1.5px solid #e2e5e9;
+    border: 1.5px solid var(--border-light);
     border-radius: 24px;
-    background: #f8f9fb;
+    background: var(--bg-input);
     font-family: inherit;
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
     user-select: none;
-    color: #64748b;
+    color: var(--text-accent);
     letter-spacing: 0.2px;
   }
-  .toggle-btn:hover { border-color: #cbd5e1; background: #f1f3f5; }
+  .toggle-btn:hover { border-color: var(--border-focus); background: var(--bg-hover); }
   .toggle-btn.active-urgent {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-900), var(--color-900-dark));
+    color: var(--color-white);
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+    box-shadow: 0 2px 8px rgba(2,62,138,0.35);
   }
   .toggle-btn.active-important {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-700), var(--color-600));
+    color: var(--color-white);
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+    box-shadow: 0 2px 8px rgba(0,119,182,0.35);
   }
 
   .add-btn {
     padding: 11px 28px;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-900), var(--color-700));
+    color: var(--color-white);
     border: none;
     border-radius: 10px;
     font-family: inherit;
@@ -128,8 +157,8 @@
     letter-spacing: 0.2px;
   }
   .add-btn:hover {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    box-shadow: 0 4px 12px rgba(15,23,42,0.2);
+    background: linear-gradient(135deg, var(--color-700), var(--color-600));
+    box-shadow: 0 4px 12px rgba(2,62,138,0.25);
     transform: translateY(-1px);
   }
   .add-btn:active { transform: translateY(0); }
@@ -137,25 +166,25 @@
   /* ── Quadrant Grid ── */
   .quadrant-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
     padding: 20px 24px;
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
   }
 
   .quadrant {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 14px;
     min-height: 230px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     transition: box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,119,182,0.08);
   }
-  .quadrant:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
+  .quadrant:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
 
   .quadrant-header {
     padding: 14px 18px;
@@ -181,35 +210,35 @@
     overflow-y: auto;
   }
 
-  /* Quadrant Colors - refined gradients */
-  .q1 .quadrant-header { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-  .q2 .quadrant-header { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; }
-  .q3 .quadrant-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-  .q4 .quadrant-header { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; }
+  /* Quadrant Colors - ocean blue palette */
+  .q1 .quadrant-header { background: linear-gradient(135deg, var(--color-900), var(--color-900-dark)); color: var(--color-white); }
+  .q2 .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-600)); color: var(--color-white); }
+  .q3 .quadrant-header { background: linear-gradient(135deg, var(--color-600), var(--color-500)); color: var(--color-white); }
+  .q4 .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
 
   /* ── Extra Sections ── */
   .extra-sections {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 0 24px 40px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
   }
   .section {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 14px;
     min-height: 120px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 3px rgba(2,62,138,0.05), 0 4px 16px rgba(2,62,138,0.04);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,119,182,0.08);
     transition: box-shadow 0.3s ease;
   }
-  .section:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
-  .monitor .quadrant-header { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
-  .completed .quadrant-header { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+  .section:hover { box-shadow: 0 2px 6px rgba(2,62,138,0.07), 0 8px 24px rgba(2,62,138,0.06); }
+  .monitor .quadrant-header { background: linear-gradient(135deg, var(--color-700), var(--color-900)); color: var(--color-white); }
+  .completed .quadrant-header { background: linear-gradient(135deg, var(--color-400), var(--color-300)); color: var(--text-primary); }
 
   /* ── Task Item ── */
   .task-item {
@@ -218,7 +247,7 @@
     gap: 10px;
     padding: 10px 12px;
     margin-bottom: 8px;
-    background: #f8f9fb;
+    background: var(--bg-input);
     border-radius: 10px;
     border-left: 3px solid transparent;
     transition: all 0.2s ease;
@@ -228,14 +257,14 @@
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .task-item:hover { background: #f1f3f7; transform: translateX(2px); }
-  .q1 .task-item { border-left-color: #ef4444; }
-  .q2 .task-item { border-left-color: #6366f1; }
-  .q3 .task-item { border-left-color: #f59e0b; }
-  .q4 .task-item { border-left-color: #94a3b8; }
-  .monitor .task-item { border-left-color: #f59e0b; }
-  .completed .task-item { border-left-color: #22c55e; opacity: 0.6; }
-  .completed .task-item .task-text { text-decoration: line-through; color: #94a3b8; }
+  .task-item:hover { background: var(--bg-hover); transform: translateX(2px); }
+  .q1 .task-item { border-left-color: var(--color-900); }
+  .q2 .task-item { border-left-color: var(--color-700); }
+  .q3 .task-item { border-left-color: var(--color-500); }
+  .q4 .task-item { border-left-color: var(--color-300); }
+  .monitor .task-item { border-left-color: var(--color-700); }
+  .completed .task-item { border-left-color: var(--color-400); opacity: 0.6; }
+  .completed .task-item .task-text { text-decoration: line-through; color: var(--color-300); }
 
   .task-text {
     flex: 1;
@@ -243,12 +272,12 @@
     font-weight: 450;
     line-height: 1.45;
     word-break: break-word;
-    color: #334155;
+    color: var(--text-primary);
   }
   .task-date {
     font-size: 0.68rem;
     font-weight: 500;
-    color: #94a3b8;
+    color: var(--text-muted);
     white-space: nowrap;
     letter-spacing: 0.2px;
   }
@@ -257,21 +286,21 @@
     font-family: inherit;
     font-size: 0.74rem;
     font-weight: 500;
-    border: 1.5px solid #e2e5e9;
+    border: 1.5px solid var(--border-light);
     border-radius: 8px;
-    background: #fff;
-    color: #64748b;
+    background: var(--bg-card);
+    color: var(--text-accent);
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.2s ease;
     outline: none;
   }
-  .task-select:hover { border-color: #cbd5e1; }
-  .task-select:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+  .task-select:hover { border-color: var(--border-focus); }
+  .task-select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--focus-ring); }
   .task-delete {
     background: none;
     border: none;
-    color: #cbd5e1;
+    color: var(--color-300);
     cursor: pointer;
     font-size: 1.15rem;
     padding: 2px 6px;
@@ -280,11 +309,11 @@
     flex-shrink: 0;
     line-height: 1;
   }
-  .task-delete:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+  .task-delete:hover { color: var(--text-primary); background: rgba(2,62,138,0.08); }
 
   /* ── Toolbar ── */
   .toolbar {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 0 24px 20px;
     display: flex;
@@ -296,61 +325,25 @@
     font-family: inherit;
     font-size: 0.78rem;
     font-weight: 600;
-    border: 1.5px solid #e2e5e9;
+    border: 1.5px solid var(--border-light);
     border-radius: 8px;
-    background: #fff;
-    color: #64748b;
+    background: var(--bg-card);
+    color: var(--text-accent);
     cursor: pointer;
     transition: all 0.2s ease;
     letter-spacing: 0.2px;
   }
-  .toolbar button:hover { background: #f8f9fb; border-color: #cbd5e1; color: #475569; }
+  .toolbar button:hover { background: var(--bg-hover); border-color: var(--border-focus); color: var(--text-primary); }
 
-  /* ── Axis Labels ── */
   .grid-wrapper {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 0 24px 0;
-    position: relative;
-  }
-  .axis-labels-top {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    padding: 16px 0 8px;
-    text-align: center;
-  }
-  .axis-labels-top span {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #94a3b8;
-  }
-  .row-labels {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    position: absolute;
-    left: 2px;
-    top: 40px;
-    bottom: 0;
-    pointer-events: none;
-  }
-  .row-label {
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #94a3b8;
-    text-align: center;
+    padding: 0;
   }
 
   .empty-msg {
     text-align: center;
-    color: #cbd5e1;
+    color: var(--color-300);
     font-size: 0.82rem;
     padding: 32px 0;
     font-weight: 500;
@@ -358,11 +351,9 @@
 
   /* ── Responsive ── */
   @media (max-width: 700px) {
-    .quadrant-grid, .extra-sections { grid-template-columns: 1fr; }
     .input-bar { flex-direction: column; align-items: stretch; }
     .input-bar input[type="text"] { flex: none; }
     .toggle-group { justify-content: center; }
-    .axis-labels-top, .row-labels { display: none; }
   }
 </style>
 </head>
@@ -383,15 +374,7 @@
 </div>
 
 <div class="grid-wrapper">
-  <div class="axis-labels-top">
-    <span>Urgent</span>
-    <span>Not Urgent</span>
-  </div>
-  <div class="row-labels">
-    <span class="row-label">Important</span>
-    <span class="row-label">Not Important</span>
-  </div>
-  <div class="quadrant-grid" style="padding-left:24px;">
+  <div class="quadrant-grid">
     <div class="quadrant q1" id="q1-panel">
       <div class="quadrant-header">
         <span>I &mdash; Urgent &amp; Important</span>
