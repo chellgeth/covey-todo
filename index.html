@@ -349,6 +349,102 @@
     font-weight: 500;
   }
 
+  /* ── Attachment Styles ── */
+  .task-attach-btn {
+    background: none;
+    border: none;
+    color: var(--color-300);
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .task-attach-btn:hover { color: var(--text-primary); background: rgba(2,62,138,0.08); }
+  .task-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    padding-left: 2px;
+  }
+  .attachment-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-accent);
+    max-width: 180px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .attachment-chip:hover { border-color: var(--border-focus); background: var(--bg-hover); }
+  .attachment-chip .att-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .attachment-chip .att-remove {
+    background: none;
+    border: none;
+    color: var(--color-300);
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    padding: 0 1px;
+    flex-shrink: 0;
+  }
+  .attachment-chip .att-remove:hover { color: var(--text-primary); }
+  .task-item-wrapper { margin-bottom: 8px; }
+  .task-item-wrapper .task-item { margin-bottom: 0; }
+
+  /* ── Print / Report Styles ── */
+  @media print {
+    body { background: #fff; }
+    .input-bar, .toolbar, .task-select, .task-delete, .task-attach-btn,
+    .attachment-chip .att-remove { display: none !important; }
+    header {
+      background: var(--color-900) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 16px 24px;
+    }
+    header h1 { font-size: 1.3rem; }
+    header p { font-size: 0.7rem; }
+    .grid-wrapper, .extra-sections { max-width: 100%; padding: 10px 16px; }
+    .quadrant-grid { gap: 12px; padding: 10px 0; max-width: 100%; }
+    .quadrant { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    .quadrant-header {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 8px 14px;
+      font-size: 0.72rem;
+    }
+    .quadrant-body { padding: 8px 10px; }
+    .task-item { padding: 6px 8px; margin-bottom: 4px; background: #f8f8f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .task-text { font-size: 0.8rem; }
+    .task-date { font-size: 0.65rem; }
+    .section { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    .extra-sections { padding-bottom: 10px; }
+    .empty-msg { padding: 12px 0; font-size: 0.75rem; }
+    .attachment-chip { font-size: 0.65rem; padding: 2px 6px; }
+    .print-report-date {
+      display: block !important;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #666;
+      padding: 6px 0 0;
+    }
+  }
+  .print-report-date { display: none; }
+
   /* ── Responsive ── */
   @media (max-width: 700px) {
     .input-bar { flex-direction: column; align-items: stretch; }
@@ -363,6 +459,7 @@
   <h1>First Things First</h1>
   <p>Covey Quadrant Task Manager</p>
 </header>
+<div class="print-report-date" id="printDate"></div>
 
 <div class="input-bar">
   <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
@@ -424,10 +521,12 @@
 </div>
 
 <div class="toolbar">
+  <button onclick="printReport()">Print Report</button>
   <button onclick="exportJSON()">Export JSON</button>
   <button onclick="document.getElementById('importFile').click()">Import JSON</button>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
 </div>
+<input type="file" id="attachFile" style="display:none" multiple onchange="handleAttachFile(event)">
 
 <script>
   const STORAGE_KEY = 'covey_tasks';
@@ -478,7 +577,8 @@
       text: text,
       quadrant: quadrant,
       createdAt: new Date().toISOString(),
-      completedAt: null
+      completedAt: null,
+      attachments: []
     });
 
     input.value = '';
@@ -516,7 +616,12 @@
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
+  let pendingAttachTaskId = null;
+
   function buildTaskEl(task) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'task-item-wrapper';
+
     const div = document.createElement('div');
     div.className = 'task-item';
 
@@ -527,6 +632,15 @@
     const dateSpan = document.createElement('span');
     dateSpan.className = 'task-date';
     dateSpan.textContent = formatDate(task.createdAt);
+
+    const attachBtn = document.createElement('button');
+    attachBtn.className = 'task-attach-btn';
+    attachBtn.innerHTML = '&#128206;';
+    attachBtn.title = 'Attach file';
+    attachBtn.addEventListener('click', function() {
+      pendingAttachTaskId = task.id;
+      document.getElementById('attachFile').click();
+    });
 
     const select = document.createElement('select');
     select.className = 'task-select';
@@ -557,9 +671,45 @@
 
     div.appendChild(textSpan);
     div.appendChild(dateSpan);
+    div.appendChild(attachBtn);
     div.appendChild(select);
     div.appendChild(delBtn);
-    return div;
+    wrapper.appendChild(div);
+
+    const attachments = task.attachments || [];
+    if (attachments.length > 0) {
+      const attDiv = document.createElement('div');
+      attDiv.className = 'task-attachments';
+      attachments.forEach((att, idx) => {
+        const chip = document.createElement('span');
+        chip.className = 'attachment-chip';
+        chip.title = att.name;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'att-name';
+        nameSpan.textContent = att.name;
+        chip.appendChild(nameSpan);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'att-remove';
+        removeBtn.innerHTML = '&times;';
+        removeBtn.title = 'Remove attachment';
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          removeAttachment(task.id, idx);
+        });
+        chip.appendChild(removeBtn);
+
+        chip.addEventListener('click', function() {
+          downloadAttachment(att);
+        });
+
+        attDiv.appendChild(chip);
+      });
+      wrapper.appendChild(attDiv);
+    }
+
+    return wrapper;
   }
 
   function render() {
@@ -585,6 +735,58 @@
         });
       }
     });
+  }
+
+  function handleAttachFile(event) {
+    const files = event.target.files;
+    if (!files.length || !pendingAttachTaskId) { event.target.value = ''; return; }
+    const task = tasks.find(t => t.id === pendingAttachTaskId);
+    if (!task) { event.target.value = ''; return; }
+    if (!task.attachments) task.attachments = [];
+
+    let remaining = files.length;
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        task.attachments.push({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: e.target.result
+        });
+        remaining--;
+        if (remaining === 0) {
+          pendingAttachTaskId = null;
+          save();
+          render();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    event.target.value = '';
+  }
+
+  function removeAttachment(taskId, attachIdx) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || !task.attachments) return;
+    task.attachments.splice(attachIdx, 1);
+    save();
+    render();
+  }
+
+  function downloadAttachment(att) {
+    const a = document.createElement('a');
+    a.href = att.data;
+    a.download = att.name;
+    a.click();
+  }
+
+  function printReport() {
+    const dateEl = document.getElementById('printDate');
+    dateEl.textContent = 'Report generated: ' + new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    window.print();
   }
 
   function exportJSON() {
