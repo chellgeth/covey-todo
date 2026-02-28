@@ -49,6 +49,7 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 .sbar-fill.yellow{background:#ecc94b}
 .sbar-fill.red{background:#fc8181}
 .sbar-fill.blue{background:#63b3ed}
+.sbar-fill.orange{background:#ed8936}
 
 /* Pump stations */
 .pump-station{width:145px;height:95px;background:linear-gradient(135deg,#2d3748,#3a4556);border:2px solid #4a5568}
@@ -67,13 +68,19 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 #parking-station{background:linear-gradient(135deg,#5a6a7d,#6a7a8d);top:205px;left:140px}
 #bathroom-station{background:linear-gradient(135deg,#4a5b6d,#5a6b7d);top:205px;left:530px}
 
-/* Store stations */
-.store-station{width:185px;height:120px;border:2px solid #a0aec0}
-#counter-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:50px;color:#2d3748}
+/* Store stations — 4 across */
+.store-station{width:165px;height:120px;border:2px solid #a0aec0}
+#counter-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:35px;color:#2d3748}
 #counter-station .station-label{color:#4a5568}
-#cooler-station{background:linear-gradient(135deg,#ebf8ff,#e6fffa);top:345px;left:280px;color:#2d3748}
+#pizza-station{background:linear-gradient(135deg,#fffaf0,#feebc8);top:345px;left:215px;color:#2d3748}
+#pizza-station .station-label{color:#c05621}
+#pizza-station.pizza-ready{animation:warmGlow 1.5s ease-in-out infinite !important}
+#pizza-station.pizza-done{animation:pizzaDone .7s infinite !important}
+@keyframes warmGlow{0%,100%{box-shadow:0 0 8px rgba(237,137,54,.3),inset 0 0 12px rgba(237,137,54,.08)}50%{box-shadow:0 0 22px rgba(237,137,54,.55),0 0 35px rgba(237,137,54,.2),inset 0 0 16px rgba(237,137,54,.12)}}
+@keyframes pizzaDone{0%,100%{box-shadow:0 0 6px rgba(72,187,120,.4)}50%{box-shadow:0 0 14px rgba(72,187,120,.7),0 0 24px rgba(237,137,54,.3)}}
+#cooler-station{background:linear-gradient(135deg,#ebf8ff,#e6fffa);top:345px;left:395px;color:#2d3748}
 #cooler-station .station-label{color:#2b6cb0}
-#floor-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:520px;color:#2d3748}
+#floor-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:575px;color:#2d3748}
 #floor-station .station-label{color:#4a5568}
 .store-station .station-sub{color:#718096}
 
@@ -88,6 +95,7 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 /* Float text */
 .float-text{position:absolute;font-weight:800;font-size:.95rem;color:#68d391;z-index:20;pointer-events:none;animation:floatUp 1.2s ease-out forwards}
 .float-text.bad{color:#fc8181}
+.float-text.pizza{color:#ed8936}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
 
 /* ── Screens ── */
@@ -101,6 +109,7 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 .screen-sub{font-size:.9rem;color:#a0aec0;margin-bottom:20px;max-width:400px;line-height:1.5}
 .screen-stats{margin:10px 0 18px;font-size:.9rem;line-height:2}
 .screen-stats span{color:#68d391;font-weight:700}
+.screen-stats .pizza-stat{color:#ed8936}
 .btn{padding:12px 36px;font-family:inherit;font-size:1rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .2s;letter-spacing:.5px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
 .btn:active{transform:translateY(0)}
@@ -134,6 +143,7 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
     <div class="hud-item"><span class="hud-icon">⏱️</span><span class="hud-val" id="hud-time">1:30</span></div>
     <div class="hud-item"><span class="hud-icon">⭐</span><div id="sat-bar"><div id="sat-fill" style="width:100%"></div></div><span class="hud-val" id="hud-sat">100%</span></div>
     <div class="hud-item"><span class="hud-icon">🎯</span><span class="hud-val" id="hud-goal">$0/$60</span></div>
+    <div class="hud-item"><span class="hud-icon">🍕</span><span class="hud-val" id="hud-pizza">—</span></div>
   </div>
 
   <!-- Game Area -->
@@ -204,6 +214,14 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
       <div class="sbar"><div class="sbar-fill green" id="counter-bar" style="width:0%"></div></div>
     </div>
 
+    <!-- Pizza oven station -->
+    <div class="station store-station" id="pizza-station">
+      <div class="station-icon">🍕</div>
+      <div class="station-label">Pizza Oven</div>
+      <div class="station-sub" id="pizza-sub">No Pizza</div>
+      <div class="sbar"><div class="sbar-fill orange" id="pizza-bar" style="width:0%"></div></div>
+    </div>
+
     <!-- Cooler station -->
     <div class="station store-station" id="cooler-station">
       <div class="station-icon">❄️</div>
@@ -236,11 +254,12 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
     <!-- SCREENS -->
     <div class="screen-overlay show" id="title-screen">
       <div class="screen-title">⛽ Gas Station Frenzy</div>
-      <div class="screen-sub">Run the busiest gas station in town! Keep customers happy, shelves stocked, and everything sparkling clean.</div>
+      <div class="screen-sub">Run the busiest gas station in town! Pump gas, bake pizza, stock shelves, and keep everything sparkling clean.</div>
       <div class="instructions">
         <b>How to play:</b><br>
         🖱️ Click stations to send your clerk there<br>
         ⛽ <b>Pumps</b> — Activate when cars arrive, don't let them wait!<br>
+        🍕 <b>Pizza Oven</b> — Bake pies and pull them out before they burn! Ready pizza = bonus $$ at the counter<br>
         ❄️ <b>Coolers</b> — Restock before they empty out<br>
         🛒 <b>Counter</b> — Serve walk-in customers quickly<br>
         🚻 <b>Bathroom</b> — Keep it clean or satisfaction drops<br>
@@ -276,16 +295,22 @@ const DAY_LENGTH = 90;
 const CLERK_SPEED = 220;
 const CARS = ['🚗','🚙','🚕','🏎️','🚗','🚙'];
 
+const PIZZA_COOK_TIME = 12;   // seconds to cook
+const PIZZA_GRACE = 10;       // seconds after cook before it burns
+const PIZZA_READY_TIME = 25;  // seconds pizza stays hot & ready
+const PIZZA_COUNTER_BONUS = 5;// extra $ per counter sale when pizza ready
+
 const STATION_POS = {
   pump0:{x:122,y:165}, pump1:{x:287,y:165}, pump2:{x:457,y:165}, pump3:{x:627,y:165},
   parking:{x:212,y:300}, bathroom:{x:602,y:300},
-  counter:{x:142,y:475}, coolers:{x:372,y:475}, floor:{x:612,y:475}
+  counter:{x:117,y:475}, pizza:{x:297,y:475}, coolers:{x:477,y:475}, floor:{x:657,y:475}
 };
 
 const TASK_DURATION = {
   pump0:1, pump1:1, pump2:1, pump3:1,
   parking:3, bathroom:4,
-  counter:2, coolers:3, floor:3
+  counter:2, coolers:3, floor:3,
+  pizza:2 // default; overridden dynamically
 };
 
 function dayConfig(day) {
@@ -313,6 +338,8 @@ function freshState() {
     timeLeft: DAY_LENGTH,
     customersServed: 0,
     dayCustomers: 0,
+    pizzasMade: 0,
+    dayPizzas: 0,
 
     clerk: { x:400, y:510, targetKey:null, arrived:false, taskProgress:0, taskDuration:0 },
 
@@ -322,6 +349,9 @@ function freshState() {
       {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🚕', payment:0},
       {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🏎️', payment:0}
     ],
+
+    // Pizza oven: empty → cooking → (done phase within cooking) → ready | burnt
+    pizza: { state:'empty', cookProgress:0, readyTimer:0 },
 
     coolerStock: 100,
     counterQueue: 0,
@@ -368,6 +398,7 @@ function init() {
       else if (id === 'parking-station') key = 'parking';
       else if (id === 'bathroom-station') key = 'bathroom';
       else if (id === 'counter-station') key = 'counter';
+      else if (id === 'pizza-station') key = 'pizza';
       else if (id === 'cooler-station') key = 'coolers';
       else if (id === 'floor-station') key = 'floor';
       if (key) assignClerk(key);
@@ -428,10 +459,12 @@ window.nextDay = function() {
   G.day++;
   G.dayMoney = 0;
   G.dayCustomers = 0;
+  G.dayPizzas = 0;
   G.timeLeft = DAY_LENGTH;
   G.satisfaction = Math.min(100, G.satisfaction + 10);
   G.clerk = { x:400, y:510, targetKey:null, arrived:false, taskProgress:0, taskDuration:0 };
   G.pumps.forEach(p => { p.state = 'empty'; p.patience = 0; p.fillProgress = 0; });
+  G.pizza = { state:'empty', cookProgress:0, readyTimer:0 };
   G.coolerStock = Math.min(100, G.coolerStock + 30);
   G.counterQueue = 0;
   G.counterPatience = 0;
@@ -462,7 +495,6 @@ function endDay() {
   const total = G.dayMoney + tips;
   const metGoal = total >= cfg.goal;
 
-  // Update high score
   const hs = parseInt(localStorage.getItem('gsf-highscore') || '0');
   if (G.totalMoney + tips > hs) localStorage.setItem('gsf-highscore', G.totalMoney + tips);
 
@@ -474,6 +506,7 @@ function endDay() {
     'Tip Bonus (' + Math.round(tipRate * 100) + '%): <span>+$' + tips + '</span><br>' +
     'Day Total: <span>$' + total + '</span> / Goal: $' + cfg.goal + '<br>' +
     'Customers Served: <span>' + G.dayCustomers + '</span><br>' +
+    'Pizzas Made: <span class="pizza-stat">' + G.dayPizzas + ' 🍕</span><br>' +
     'Satisfaction: <span>' + Math.round(G.satisfaction) + '%</span><br>' +
     'Total Bank: <span>$' + G.totalMoney + '</span>';
 
@@ -496,7 +529,8 @@ function gameOver(reason) {
   $('gameover-stats').innerHTML =
     'Survived: <span>' + G.day + ' day' + (G.day > 1 ? 's' : '') + '</span><br>' +
     'Total Earned: <span>$' + G.totalMoney + '</span><br>' +
-    'Customers Served: <span>' + G.customersServed + '</span>';
+    'Customers Served: <span>' + G.customersServed + '</span><br>' +
+    'Pizzas Made: <span class="pizza-stat">' + G.pizzasMade + ' 🍕</span>';
 
   G.screen = 'gameover';
   showScreen('gameover');
@@ -505,18 +539,22 @@ function gameOver(reason) {
 // ══════════════════════════════════════════
 // CLERK SYSTEM
 // ══════════════════════════════════════════
+function getPizzaTaskDuration() {
+  if (G.pizza.state === 'empty') return 2;
+  if (G.pizza.state === 'cooking' && G.pizza.cookProgress >= PIZZA_COOK_TIME) return 1;
+  if (G.pizza.state === 'burnt') return 2;
+  return 2;
+}
+
 function assignClerk(stationKey) {
   if (!canDoTask(stationKey)) return;
   const c = G.clerk;
-  // If already performing a task at the same station, ignore
   if (c.targetKey === stationKey && c.arrived && c.taskProgress > 0) return;
   c.targetKey = stationKey;
   c.arrived = false;
   c.taskProgress = 0;
-  c.taskDuration = TASK_DURATION[stationKey];
-  // Remove active highlight from all stations
+  c.taskDuration = stationKey === 'pizza' ? getPizzaTaskDuration() : TASK_DURATION[stationKey];
   document.querySelectorAll('.station.active').forEach(el => el.classList.remove('active'));
-  // Highlight target station
   const el = stationElement(stationKey);
   if (el) el.classList.add('active');
 }
@@ -531,6 +569,12 @@ function canDoTask(key) {
   if (key === 'bathroom') return G.bathroomClean < 90;
   if (key === 'floor') return G.floorClean < 90;
   if (key === 'parking') return G.parkingClean < 90;
+  if (key === 'pizza') {
+    const p = G.pizza;
+    return p.state === 'empty' ||
+           (p.state === 'cooking' && p.cookProgress >= PIZZA_COOK_TIME) ||
+           p.state === 'burnt';
+  }
   return false;
 }
 
@@ -539,6 +583,7 @@ function stationElement(key) {
   if (key === 'parking') return $('parking-station');
   if (key === 'bathroom') return $('bathroom-station');
   if (key === 'counter') return $('counter-station');
+  if (key === 'pizza') return $('pizza-station');
   if (key === 'coolers') return $('cooler-station');
   if (key === 'floor') return $('floor-station');
   return null;
@@ -566,7 +611,6 @@ function updateClerk(dt) {
       c.y += (dy / dist) * speed;
     }
   } else {
-    // Check if task is still valid
     if (!canDoTask(c.targetKey)) {
       completeClerkTask();
       return;
@@ -596,8 +640,27 @@ function completeClerkTask() {
     if (G.counterQueue > 0 && G.coolerStock > 0) {
       G.counterQueue--;
       G.coolerStock = Math.max(0, G.coolerStock - randInt(12, 20));
-      const pay = randInt(3, 9);
-      earnMoney(pay, STATION_POS.counter.x, STATION_POS.counter.y - 30);
+      let pay = randInt(3, 9);
+      if (G.pizza.state === 'ready') pay += PIZZA_COUNTER_BONUS;
+      earnMoney(pay, STATION_POS.counter.x, STATION_POS.counter.y - 30,
+                G.pizza.state === 'ready');
+    }
+  } else if (key === 'pizza') {
+    const p = G.pizza;
+    if (p.state === 'empty') {
+      p.state = 'cooking';
+      p.cookProgress = 0;
+      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'Pizza in!', false, true);
+    } else if (p.state === 'cooking' && p.cookProgress >= PIZZA_COOK_TIME) {
+      p.state = 'ready';
+      p.readyTimer = PIZZA_READY_TIME;
+      G.pizzasMade++;
+      G.dayPizzas++;
+      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'HOT & READY!', false, true);
+    } else if (p.state === 'burnt') {
+      p.state = 'empty';
+      p.cookProgress = 0;
+      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'Cleaned!', false, true);
     }
   } else if (key === 'bathroom') {
     G.bathroomClean = 100;
@@ -610,7 +673,6 @@ function completeClerkTask() {
     spawnFloat(STATION_POS.parking.x, STATION_POS.parking.y - 30, 'Swept!', false);
   }
 
-  // Remove active highlight
   const el = stationElement(key);
   if (el) el.classList.remove('active');
 
@@ -624,7 +686,6 @@ function completeClerkTask() {
 // ══════════════════════════════════════════
 function spawnCar() {
   const cfg = dayConfig(G.day);
-  // Find an empty pump
   const empties = [];
   G.pumps.forEach((p, i) => { if (p.state === 'empty') empties.push(i); });
   if (empties.length === 0) return;
@@ -657,11 +718,14 @@ function updateCustomers(dt) {
     G.nextCarTimer = cfg.carInterval + randFloat(-2, 2);
   }
 
-  // Spawn counter customers
+  // Spawn counter customers (pizza being ready attracts more)
   G.nextCounterTimer -= dt;
   if (G.nextCounterTimer <= 0) {
     spawnCounterCustomer();
-    G.nextCounterTimer = cfg.counterInterval + randFloat(-2, 2);
+    const interval = G.pizza.state === 'ready'
+      ? cfg.counterInterval * 0.65
+      : cfg.counterInterval;
+    G.nextCounterTimer = interval + randFloat(-2, 2);
   }
 
   // Update pump patience & filling
@@ -669,11 +733,9 @@ function updateCustomers(dt) {
     if (p.state === 'waiting') {
       p.patience -= dt;
       if (p.patience <= 0) {
-        // Customer leaves angry
         p.state = 'empty';
         G.satisfaction = Math.max(0, G.satisfaction - 8);
         spawnFloat(STATION_POS['pump' + i].x, STATION_POS['pump' + i].y - 30, '😠 Left!', true);
-        // Cancel clerk task if heading here
         if (G.clerk.targetKey === 'pump' + i) {
           const el = stationElement('pump' + i);
           if (el) el.classList.remove('active');
@@ -684,7 +746,6 @@ function updateCustomers(dt) {
     } else if (p.state === 'filling') {
       p.fillProgress += dt;
       if (p.fillProgress >= 5) {
-        // Done filling, customer pays
         p.state = 'empty';
         earnMoney(p.payment, STATION_POS['pump' + i].x, STATION_POS['pump' + i].y - 30);
         G.satisfaction = Math.min(100, G.satisfaction + 1.5);
@@ -714,6 +775,36 @@ function updateCustomers(dt) {
 }
 
 // ══════════════════════════════════════════
+// PIZZA OVEN SYSTEM
+// ══════════════════════════════════════════
+function updatePizza(dt) {
+  const p = G.pizza;
+
+  if (p.state === 'cooking') {
+    p.cookProgress += dt;
+    // Burns if left too long after being done
+    if (p.cookProgress >= PIZZA_COOK_TIME + PIZZA_GRACE) {
+      p.state = 'burnt';
+      G.satisfaction = Math.max(0, G.satisfaction - 5);
+      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, '🔥 Burnt!', true, true);
+      // Cancel clerk task if heading to pizza for a pull-out
+      if (G.clerk.targetKey === 'pizza') {
+        const el = stationElement('pizza');
+        if (el) el.classList.remove('active');
+        G.clerk.targetKey = null;
+        G.clerk.arrived = false;
+      }
+    }
+  } else if (p.state === 'ready') {
+    p.readyTimer -= dt;
+    if (p.readyTimer <= 0) {
+      p.state = 'empty';
+      p.cookProgress = 0;
+    }
+  }
+}
+
+// ══════════════════════════════════════════
 // DEGRADATION
 // ══════════════════════════════════════════
 function updateDegradation(dt) {
@@ -725,7 +816,6 @@ function updateDegradation(dt) {
   G.floorClean = Math.max(0, G.floorClean - 0.7 * m * dt);
   G.parkingClean = Math.max(0, G.parkingClean - 0.55 * m * dt);
 
-  // Satisfaction drain from dirty areas
   if (G.bathroomClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.3 * m * dt);
   if (G.floorClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.2 * m * dt);
   if (G.parkingClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.15 * m * dt);
@@ -735,19 +825,19 @@ function updateDegradation(dt) {
 // ══════════════════════════════════════════
 // MONEY & EFFECTS
 // ══════════════════════════════════════════
-function earnMoney(amount, x, y) {
+function earnMoney(amount, x, y, pizzaBonus) {
   G.dayMoney += amount;
   G.totalMoney += amount;
   G.dayCustomers++;
   G.customersServed++;
-  spawnFloat(x, y, '+$' + amount, false);
+  spawnFloat(x, y, '+$' + amount + (pizzaBonus ? ' 🍕' : ''), false, pizzaBonus);
 }
 
-function spawnFloat(x, y, text, isBad) {
+function spawnFloat(x, y, text, isBad, isPizza) {
   const el = document.createElement('div');
-  el.className = 'float-text' + (isBad ? ' bad' : '');
+  el.className = 'float-text' + (isBad ? ' bad' : '') + (isPizza && !isBad ? ' pizza' : '');
   el.textContent = text;
-  el.style.left = (x - 25) + 'px';
+  el.style.left = (x - 30) + 'px';
   el.style.top = y + 'px';
   gameArea.appendChild(el);
   setTimeout(() => el.remove(), 1300);
@@ -775,6 +865,20 @@ function render() {
   const cfg = dayConfig(G.day);
   $('hud-goal').textContent = '$' + G.dayMoney + '/$' + cfg.goal;
   $('hud-goal').className = 'hud-val' + (G.dayMoney >= cfg.goal ? '' : G.timeLeft < 30 ? ' warn' : '');
+
+  // HUD pizza indicator
+  const pState = G.pizza.state;
+  const pizzaHud = $('hud-pizza');
+  if (pState === 'empty') { pizzaHud.textContent = '—'; pizzaHud.className = 'hud-val'; }
+  else if (pState === 'cooking' && G.pizza.cookProgress < PIZZA_COOK_TIME) {
+    pizzaHud.textContent = 'Baking...'; pizzaHud.className = 'hud-val warn';
+  } else if (pState === 'cooking') {
+    pizzaHud.textContent = 'DONE!'; pizzaHud.className = 'hud-val danger';
+  } else if (pState === 'ready') {
+    pizzaHud.textContent = 'HOT! ' + Math.ceil(G.pizza.readyTimer) + 's'; pizzaHud.className = 'hud-val';
+  } else if (pState === 'burnt') {
+    pizzaHud.textContent = 'BURNT'; pizzaHud.className = 'hud-val danger';
+  }
 
   // Pumps
   G.pumps.forEach((p, i) => {
@@ -814,7 +918,8 @@ function render() {
   // Counter
   const counterEl = $('counter-station');
   if (G.counterQueue > 0) {
-    $('counter-sub').textContent = '👤 ×' + G.counterQueue;
+    const pizzaTag = G.pizza.state === 'ready' ? ' 🍕' : '';
+    $('counter-sub').textContent = '👤 x' + G.counterQueue + pizzaTag;
     const pct = (G.counterPatience / G.counterMaxPatience) * 100;
     $('counter-bar').style.width = pct + '%';
     $('counter-bar').className = 'sbar-fill ' + (pct < 30 ? 'red' : pct < 60 ? 'yellow' : 'green');
@@ -825,6 +930,9 @@ function render() {
     $('counter-bar').style.width = '0%';
     counterEl.classList.remove('needs-attention', 'critical');
   }
+
+  // Pizza oven
+  renderPizzaStation();
 
   // Cleaning stations
   renderCleanStation('bathroom', G.bathroomClean, 'Clean', 'Needs Cleaning', 'Filthy!');
@@ -842,11 +950,7 @@ function render() {
   clerkLabel.style.top = (G.clerk.y - 32) + 'px';
   if (G.clerk.targetKey) {
     clerkLabel.classList.add('visible');
-    if (G.clerk.arrived) {
-      clerkLabel.textContent = 'Working...';
-    } else {
-      clerkLabel.textContent = 'Going →';
-    }
+    clerkLabel.textContent = G.clerk.arrived ? 'Working...' : 'Going →';
   } else {
     clerkLabel.classList.remove('visible');
   }
@@ -862,6 +966,53 @@ function render() {
     clerkProg.style.opacity = '1';
   } else {
     clerkProg.style.opacity = '0';
+  }
+}
+
+function renderPizzaStation() {
+  const el = $('pizza-station');
+  const bar = $('pizza-bar');
+  const sub = $('pizza-sub');
+  const p = G.pizza;
+
+  // Clear special classes
+  el.classList.remove('pizza-ready', 'pizza-done', 'needs-attention', 'critical');
+
+  if (p.state === 'empty') {
+    sub.textContent = 'No Pizza';
+    bar.style.width = '0%';
+    bar.className = 'sbar-fill orange';
+  } else if (p.state === 'cooking') {
+    if (p.cookProgress < PIZZA_COOK_TIME) {
+      // Still cooking
+      const pct = (p.cookProgress / PIZZA_COOK_TIME) * 100;
+      sub.textContent = '🔥 Cooking...';
+      bar.style.width = pct + '%';
+      bar.className = 'sbar-fill orange';
+    } else {
+      // Done! Needs to be pulled out before it burns
+      const graceLeft = PIZZA_GRACE - (p.cookProgress - PIZZA_COOK_TIME);
+      const gracePct = (graceLeft / PIZZA_GRACE) * 100;
+      sub.textContent = '✅ TAKE IT OUT!';
+      bar.style.width = '100%';
+      bar.className = 'sbar-fill ' + (gracePct < 35 ? 'red' : 'green');
+      if (gracePct < 35) {
+        el.classList.add('critical');
+      } else {
+        el.classList.add('pizza-done');
+      }
+    }
+  } else if (p.state === 'ready') {
+    const pct = (p.readyTimer / PIZZA_READY_TIME) * 100;
+    sub.textContent = '🍕 HOT & READY!';
+    bar.style.width = pct + '%';
+    bar.className = 'sbar-fill green';
+    el.classList.add('pizza-ready');
+  } else if (p.state === 'burnt') {
+    sub.textContent = '💨 Burnt! Clean it!';
+    bar.style.width = '100%';
+    bar.className = 'sbar-fill red';
+    el.classList.add('critical');
   }
 }
 
@@ -900,7 +1051,6 @@ function gameLoop(timestamp) {
 
   if (G.screen !== 'playing' || G.paused) return;
 
-  // Timer
   G.timeLeft -= dt;
   if (G.timeLeft <= 0) {
     G.timeLeft = 0;
@@ -908,7 +1058,6 @@ function gameLoop(timestamp) {
     return;
   }
 
-  // Game over check
   if (G.satisfaction <= 0) {
     G.satisfaction = 0;
     gameOver('The health inspector shut you down! Satisfaction hit 0%.');
@@ -916,6 +1065,7 @@ function gameLoop(timestamp) {
   }
 
   updateCustomers(dt);
+  updatePizza(dt);
   updateDegradation(dt);
   updateClerk(dt);
   render();
