@@ -3,32 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Gas Station Frenzy</title>
+<title>Patel's Corner — Gas Station Sim</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;overflow-x:hidden;padding-top:10px;color:#e2e8f0}
+body{background:#1a1520;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;overflow-x:hidden;padding-top:10px;color:#e2e8f0}
 #game-wrapper{width:800px;transform-origin:top center;position:relative}
 
-/* ── HUD ── */
-#hud{background:linear-gradient(135deg,#16213e,#1a1a40);padding:10px 18px;display:flex;justify-content:space-between;align-items:center;border-radius:12px 12px 0 0;border:2px solid #2a3a5c;border-bottom:none;gap:8px;flex-wrap:wrap}
-.hud-item{display:flex;align-items:center;gap:5px;font-size:.85rem;font-weight:600;white-space:nowrap}
-.hud-icon{font-size:1rem}
+/* HUD */
+#hud{background:linear-gradient(135deg,#1e1a2e,#221e33);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-radius:12px 12px 0 0;border:2px solid #3a2a5c;border-bottom:none;gap:6px;flex-wrap:wrap}
+.hud-item{display:flex;align-items:center;gap:4px;font-size:.82rem;font-weight:600;white-space:nowrap}
+.hud-icon{font-size:.95rem}
 .hud-val{color:#68d391;font-variant-numeric:tabular-nums}
 .hud-val.warn{color:#fbd38d}
 .hud-val.danger{color:#fc8181}
-#sat-bar{width:80px;height:7px;background:#2d3748;border-radius:4px;overflow:hidden}
+#sat-bar{width:70px;height:6px;background:#2d2840;border-radius:4px;overflow:hidden}
 #sat-fill{height:100%;background:#68d391;border-radius:4px;transition:width .3s,background .3s}
 
-/* ── Game Area ── */
-#game-area{width:800px;height:550px;background:#5a6577;position:relative;overflow:hidden;border:2px solid #2a3a5c;border-top:none;border-radius:0 0 12px 12px;cursor:default;user-select:none}
-
-/* Road */
-.road{position:absolute;top:0;left:0;width:100%;height:42px;background:#3a4255;border-bottom:3px solid #d69e2e}
-.road-dash{position:absolute;top:18px;height:3px;width:28px;background:#d69e2e;border-radius:2px}
+/* Game Area */
+#game-area{width:800px;height:550px;background:#5a6577;position:relative;overflow:hidden;border:2px solid #3a2a5c;border-top:none;border-radius:0 0 12px 12px;cursor:default;user-select:none}
+.road{position:absolute;top:0;left:0;width:100%;height:42px;background:#3a4255;border-bottom:3px solid #d4a017}
+.road-dash{position:absolute;top:18px;height:3px;width:28px;background:#d4a017;border-radius:2px}
 
 /* Canopy */
-.canopy{position:absolute;top:44px;left:25px;right:25px;height:125px;background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
-.canopy-title{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:.6rem;font-weight:800;color:rgba(255,255,255,.25);letter-spacing:3px;text-transform:uppercase}
+.canopy{position:absolute;top:44px;left:25px;right:25px;height:125px;background:linear-gradient(135deg,#b8860b,#d4a017);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.canopy-title{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:.7rem;font-weight:800;color:rgba(255,255,255,.35);letter-spacing:4px;text-transform:uppercase;white-space:nowrap}
 
 /* Station shared */
 .station{position:absolute;border-radius:10px;cursor:pointer;transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:2}
@@ -38,37 +36,36 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 .station.critical{animation:pulseCrit .6s infinite}
 @keyframes pulseWarn{0%,100%{box-shadow:0 0 0 2px #ecc94b}50%{box-shadow:0 0 0 4px #ecc94b,0 0 12px rgba(236,201,75,.4)}}
 @keyframes pulseCrit{0%,100%{box-shadow:0 0 0 2px #fc8181}50%{box-shadow:0 0 0 5px #fc8181,0 0 16px rgba(252,129,129,.5)}}
-.station-icon{font-size:1.6rem;line-height:1;pointer-events:none}
-.station-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.85);pointer-events:none}
-.station-sub{font-size:.75rem;pointer-events:none;min-height:1.1em}
-
-/* Status bar inside stations */
+.station-icon{font-size:1.5rem;line-height:1;pointer-events:none}
+.station-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.85);pointer-events:none}
+.station-sub{font-size:.7rem;pointer-events:none;min-height:1em}
 .sbar{width:80%;height:5px;background:rgba(0,0,0,.25);border-radius:3px;overflow:hidden;margin-top:1px;pointer-events:none}
 .sbar-fill{height:100%;border-radius:3px;transition:width .3s}
-.sbar-fill.green{background:#68d391}
-.sbar-fill.yellow{background:#ecc94b}
-.sbar-fill.red{background:#fc8181}
-.sbar-fill.blue{background:#63b3ed}
-.sbar-fill.orange{background:#ed8936}
+.sbar-fill.green{background:#68d391}.sbar-fill.yellow{background:#ecc94b}.sbar-fill.red{background:#fc8181}
+.sbar-fill.blue{background:#63b3ed}.sbar-fill.orange{background:#ed8936}
 
-/* Pump stations */
+/* Pumps */
 .pump-station{width:145px;height:95px;background:linear-gradient(135deg,#2d3748,#3a4556);border:2px solid #4a5568}
-.pump-station .car-slot{font-size:1.4rem;position:absolute;bottom:2px;left:50%;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .3s}
+.pump-station .car-slot{font-size:1.3rem;position:absolute;bottom:1px;left:50%;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .3s}
 .pump-station .car-slot.visible{opacity:1}
 
 /* Area backgrounds */
 .area-bg{position:absolute;border-radius:10px;z-index:0}
-#parking-bg{top:190px;left:25px;width:365px;height:115px;background:linear-gradient(135deg,#6b7a8d,#7a8899);border:2px dashed #8a99aa}
-#bathroom-bg{top:190px;left:420px;width:355px;height:115px;background:linear-gradient(135deg,#5a6b7d,#6a7b8d);border:2px solid #7a8b9d}
+#parking-bg{top:190px;left:25px;width:235px;height:115px;background:linear-gradient(135deg,#6b7a8d,#7a8899);border:2px dashed #8a99aa}
+#drivethru-bg{top:190px;left:275px;width:220px;height:115px;background:linear-gradient(180deg,#4a5058,#555d65);border:2px solid #707a84}
+#bathroom-bg{top:190px;left:510px;width:265px;height:115px;background:linear-gradient(135deg,#5a6b7d,#6a7b8d);border:2px solid #7a8b9d}
 #store-bg{top:325px;left:25px;width:750px;height:175px;background:linear-gradient(135deg,#edf2f7,#e2e8f0);border:2px solid #cbd5e0;box-shadow:inset 0 2px 8px rgba(0,0,0,.05)}
-#store-label{position:absolute;top:330px;left:50%;transform:translateX(-50%);font-size:.55rem;font-weight:800;color:rgba(0,0,0,.15);letter-spacing:4px;text-transform:uppercase;z-index:1}
+#store-label{position:absolute;top:330px;left:50%;transform:translateX(-50%);font-size:.5rem;font-weight:800;color:rgba(0,0,0,.12);letter-spacing:4px;text-transform:uppercase;z-index:1}
 
-/* Cleaning stations */
-.clean-station{width:145px;height:80px;border:2px solid rgba(255,255,255,.15)}
-#parking-station{background:linear-gradient(135deg,#5a6a7d,#6a7a8d);top:205px;left:140px}
-#bathroom-station{background:linear-gradient(135deg,#4a5b6d,#5a6b7d);top:205px;left:530px}
+/* Middle stations */
+.mid-station{width:145px;height:80px;border:2px solid rgba(255,255,255,.15)}
+#parking-station{background:linear-gradient(135deg,#5a6a7d,#6a7a8d);top:205px;left:70px}
+#drivethru-station{background:linear-gradient(135deg,#4a5060,#5a6070);top:205px;left:312px;border-color:#707a84}
+#drivethru-station .car-slot{font-size:1.1rem;position:absolute;bottom:1px;right:4px;pointer-events:none;opacity:0;transition:opacity .3s}
+#drivethru-station .car-slot.visible{opacity:1}
+#bathroom-station{background:linear-gradient(135deg,#4a5b6d,#5a6b7d);top:205px;left:570px}
 
-/* Store stations — 4 across */
+/* Store stations */
 .store-station{width:165px;height:120px;border:2px solid #a0aec0}
 #counter-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:35px;color:#2d3748}
 #counter-station .station-label{color:#4a5568}
@@ -85,58 +82,67 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 .store-station .station-sub{color:#718096}
 
 /* Clerk */
-#clerk{position:absolute;z-index:10;font-size:1.8rem;transition:none;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
-#clerk-label{position:absolute;z-index:11;font-size:.55rem;font-weight:700;color:#fff;background:#805ad5;padding:1px 6px;border-radius:8px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
+#clerk{position:absolute;z-index:10;font-size:1.7rem;transition:none;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+#clerk-label{position:absolute;z-index:11;font-size:.52rem;font-weight:700;color:#fff;background:#805ad5;padding:1px 6px;border-radius:8px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
 #clerk-label.visible{opacity:1}
-
-/* Progress ring around clerk */
 #clerk-progress{position:absolute;z-index:12;pointer-events:none}
 
 /* Float text */
-.float-text{position:absolute;font-weight:800;font-size:.95rem;color:#68d391;z-index:20;pointer-events:none;animation:floatUp 1.2s ease-out forwards}
-.float-text.bad{color:#fc8181}
-.float-text.pizza{color:#ed8936}
+.float-text{position:absolute;font-weight:800;font-size:.9rem;color:#68d391;z-index:20;pointer-events:none;animation:floatUp 1.2s ease-out forwards}
+.float-text.bad{color:#fc8181}.float-text.pizza{color:#ed8936}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
 
-/* ── Screens ── */
-.screen-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+/* Screens */
+.screen-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:18px 20px;overflow-y:auto}
 .screen-overlay.show{display:flex}
-#title-screen{background:linear-gradient(135deg,rgba(26,26,46,.97),rgba(22,33,62,.97))}
-#dayend-screen{background:rgba(22,33,62,.95)}
-#gameover-screen{background:rgba(26,10,10,.95)}
-
-.screen-title{font-size:2.2rem;font-weight:800;margin-bottom:4px}
-.screen-sub{font-size:.9rem;color:#a0aec0;margin-bottom:20px;max-width:400px;line-height:1.5}
-.screen-stats{margin:10px 0 18px;font-size:.9rem;line-height:2}
+#title-screen{background:linear-gradient(135deg,rgba(26,21,32,.97),rgba(30,26,46,.97));justify-content:center}
+#dayend-screen{background:rgba(22,28,42,.96)}
+#gameover-screen{background:rgba(30,10,10,.96);justify-content:center}
+.screen-title{font-size:2rem;font-weight:800;margin-bottom:2px}
+.screen-sub{font-size:.85rem;color:#a0aec0;margin-bottom:12px;max-width:420px;line-height:1.5}
+.screen-stats{margin:4px 0 8px;font-size:.85rem;line-height:1.9}
 .screen-stats span{color:#68d391;font-weight:700}
 .screen-stats .pizza-stat{color:#ed8936}
-.btn{padding:12px 36px;font-family:inherit;font-size:1rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .2s;letter-spacing:.5px}
+.dayend-stars{font-size:1.5rem;margin:4px 0}
+.btn{padding:10px 32px;font-family:inherit;font-size:.95rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .2s;letter-spacing:.5px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
 .btn:active{transform:translateY(0)}
 .btn-primary{background:linear-gradient(135deg,#68d391,#48bb78);color:#1a202c}
 .btn-danger{background:linear-gradient(135deg,#fc8181,#f56565);color:#fff}
-.btn-secondary{background:linear-gradient(135deg,#a0aec0,#718096);color:#fff;margin-top:8px;padding:8px 24px;font-size:.85rem}
-
-.instructions{background:rgba(255,255,255,.06);border-radius:10px;padding:14px 20px;margin:14px 0;font-size:.78rem;color:#a0aec0;line-height:1.65;text-align:left;max-width:420px}
+.btn-secondary{background:linear-gradient(135deg,#a0aec0,#718096);color:#fff;margin-top:6px;padding:7px 20px;font-size:.8rem}
+.instructions{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 18px;margin:10px 0;font-size:.74rem;color:#a0aec0;line-height:1.6;text-align:left;max-width:440px}
 .instructions b{color:#e2e8f0}
-
-.high-score{font-size:.75rem;color:#a0aec0;margin-top:10px}
+.high-score{font-size:.72rem;color:#a0aec0;margin-top:8px}
 .high-score span{color:#fbd38d;font-weight:700}
 
+/* Upgrade Shop */
+.shop-section{width:100%;max-width:480px;margin:6px 0 10px}
+.shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.shop-title{font-size:.85rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.shop-balance{font-size:.8rem;color:#68d391;font-weight:700}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.shop-item{background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.06)}
+.shop-item.owned{opacity:.5}
+.shop-icon{font-size:1.2rem;flex-shrink:0}
+.shop-info{flex:1;text-align:left}
+.shop-name{font-size:.72rem;font-weight:700;color:#e2e8f0}
+.shop-desc{font-size:.58rem;color:#a0aec0}
+.shop-btn{padding:4px 10px;border:none;border-radius:6px;font-family:inherit;font-size:.65rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:transform .1s}
+.shop-btn.buy{background:#48bb78;color:#1a202c}.shop-btn.buy:hover{transform:scale(1.05)}
+.shop-btn.owned-btn{background:#4a5568;color:#a0aec0;cursor:default}
+.shop-btn.locked{background:#2d2840;color:#718096;cursor:default}
+.shop-btn.poor{background:#2d2840;color:#fc8181;cursor:not-allowed;opacity:.7}
+
 /* Day banner */
-#day-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;font-size:2.5rem;font-weight:800;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;pointer-events:none}
+#day-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;font-size:2.3rem;font-weight:800;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;pointer-events:none}
 #day-banner.show{animation:bannerPop 2s ease-out forwards}
 @keyframes bannerPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}30%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 
-/* Responsive */
-@media(max-width:830px){
-  body{padding-top:0;align-items:flex-start}
-}
+@media(max-width:830px){body{padding-top:0;align-items:flex-start}}
 </style>
 </head>
 <body>
 <div id="game-wrapper">
-  <!-- HUD -->
   <div id="hud">
     <div class="hud-item"><span class="hud-icon">💰</span><span class="hud-val" id="hud-money">$0</span></div>
     <div class="hud-item"><span class="hud-icon">📅</span><span class="hud-val" id="hud-day">Day 1</span></div>
@@ -145,40 +151,31 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
     <div class="hud-item"><span class="hud-icon">🎯</span><span class="hud-val" id="hud-goal">$0/$60</span></div>
     <div class="hud-item"><span class="hud-icon">🍕</span><span class="hud-val" id="hud-pizza">—</span></div>
   </div>
-
-  <!-- Game Area -->
   <div id="game-area">
-    <!-- Road -->
     <div class="road" id="road"></div>
-
-    <!-- Canopy -->
-    <div class="canopy"><span class="canopy-title">Gas Station Frenzy</span></div>
+    <div class="canopy"><span class="canopy-title">Patel's Corner</span></div>
 
     <!-- Pumps -->
     <div class="station pump-station" id="pump-0" style="top:60px;left:50px">
-      <div class="station-icon">⛽</div>
-      <div class="station-label">Pump 1</div>
+      <div class="station-icon">⛽</div><div class="station-label">Pump 1</div>
       <div class="station-sub" id="pump-0-sub"></div>
       <div class="sbar"><div class="sbar-fill green" id="pump-0-bar" style="width:0%"></div></div>
       <div class="car-slot" id="car-0">🚗</div>
     </div>
     <div class="station pump-station" id="pump-1" style="top:60px;left:215px">
-      <div class="station-icon">⛽</div>
-      <div class="station-label">Pump 2</div>
+      <div class="station-icon">⛽</div><div class="station-label">Pump 2</div>
       <div class="station-sub" id="pump-1-sub"></div>
       <div class="sbar"><div class="sbar-fill green" id="pump-1-bar" style="width:0%"></div></div>
       <div class="car-slot" id="car-1">🚙</div>
     </div>
     <div class="station pump-station" id="pump-2" style="top:60px;left:385px">
-      <div class="station-icon">⛽</div>
-      <div class="station-label">Pump 3</div>
+      <div class="station-icon">⛽</div><div class="station-label">Pump 3</div>
       <div class="station-sub" id="pump-2-sub"></div>
       <div class="sbar"><div class="sbar-fill green" id="pump-2-bar" style="width:0%"></div></div>
       <div class="car-slot" id="car-2">🚕</div>
     </div>
     <div class="station pump-station" id="pump-3" style="top:60px;left:555px">
-      <div class="station-icon">⛽</div>
-      <div class="station-label">Pump 4</div>
+      <div class="station-icon">⛽</div><div class="station-label">Pump 4</div>
       <div class="station-sub" id="pump-3-sub"></div>
       <div class="sbar"><div class="sbar-fill green" id="pump-3-bar" style="width:0%"></div></div>
       <div class="car-slot" id="car-3">🏎️</div>
@@ -186,54 +183,47 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 
     <!-- Area backgrounds -->
     <div class="area-bg" id="parking-bg"></div>
+    <div class="area-bg" id="drivethru-bg"></div>
     <div class="area-bg" id="bathroom-bg"></div>
     <div class="area-bg" id="store-bg"></div>
-    <div id="store-label">— Store Interior —</div>
+    <div id="store-label">— Patel's Corner Store —</div>
 
-    <!-- Parking lot station -->
-    <div class="station clean-station" id="parking-station">
-      <div class="station-icon">🧹</div>
-      <div class="station-label">Parking Lot</div>
+    <!-- Middle row stations -->
+    <div class="station mid-station" id="parking-station">
+      <div class="station-icon">🧹</div><div class="station-label">Parking Lot</div>
       <div class="station-sub" id="parking-sub">Clean</div>
       <div class="sbar"><div class="sbar-fill green" id="parking-bar" style="width:100%"></div></div>
     </div>
-
-    <!-- Bathroom station -->
-    <div class="station clean-station" id="bathroom-station">
-      <div class="station-icon">🚻</div>
-      <div class="station-label">Bathroom</div>
+    <div class="station mid-station" id="drivethru-station">
+      <div class="station-icon">🚘</div><div class="station-label">Drive-Thru</div>
+      <div class="station-sub" id="drivethru-sub">No orders</div>
+      <div class="sbar"><div class="sbar-fill green" id="drivethru-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="dt-car">🚗</div>
+    </div>
+    <div class="station mid-station" id="bathroom-station">
+      <div class="station-icon">🚻</div><div class="station-label">Bathroom</div>
       <div class="station-sub" id="bathroom-sub">Clean</div>
       <div class="sbar"><div class="sbar-fill green" id="bathroom-bar" style="width:100%"></div></div>
     </div>
 
-    <!-- Counter station -->
+    <!-- Store stations -->
     <div class="station store-station" id="counter-station">
-      <div class="station-icon">🛒</div>
-      <div class="station-label">Counter</div>
+      <div class="station-icon">🛒</div><div class="station-label">Counter</div>
       <div class="station-sub" id="counter-sub">No customers</div>
       <div class="sbar"><div class="sbar-fill green" id="counter-bar" style="width:0%"></div></div>
     </div>
-
-    <!-- Pizza oven station -->
     <div class="station store-station" id="pizza-station">
-      <div class="station-icon">🍕</div>
-      <div class="station-label">Pizza Oven</div>
+      <div class="station-icon">🍕</div><div class="station-label">Pizza Oven</div>
       <div class="station-sub" id="pizza-sub">No Pizza</div>
       <div class="sbar"><div class="sbar-fill orange" id="pizza-bar" style="width:0%"></div></div>
     </div>
-
-    <!-- Cooler station -->
     <div class="station store-station" id="cooler-station">
-      <div class="station-icon">❄️</div>
-      <div class="station-label">Coolers</div>
+      <div class="station-icon">❄️</div><div class="station-label">Coolers</div>
       <div class="station-sub" id="cooler-sub">Stocked</div>
       <div class="sbar"><div class="sbar-fill blue" id="cooler-bar" style="width:100%"></div></div>
     </div>
-
-    <!-- Floor station -->
     <div class="station store-station" id="floor-station">
-      <div class="station-icon">🧽</div>
-      <div class="station-label">Floor</div>
+      <div class="station-icon">🧽</div><div class="station-label">Floor</div>
       <div class="station-sub" id="floor-sub">Clean</div>
       <div class="sbar"><div class="sbar-fill green" id="floor-bar" style="width:100%"></div></div>
     </div>
@@ -247,35 +237,42 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
         <circle id="prog-ring" cx="18" cy="18" r="15" fill="none" stroke="#9f7aea" stroke-width="3" stroke-dasharray="94.25" stroke-dashoffset="94.25" stroke-linecap="round" transform="rotate(-90 18 18)"/>
       </svg>
     </div>
-
-    <!-- Day banner -->
     <div id="day-banner">Day 1</div>
 
     <!-- SCREENS -->
     <div class="screen-overlay show" id="title-screen">
-      <div class="screen-title">⛽ Gas Station Frenzy</div>
-      <div class="screen-sub">Run the busiest gas station in town! Pump gas, bake pizza, stock shelves, and keep everything sparkling clean.</div>
+      <div class="screen-title">🏪 Patel's Corner</div>
+      <div class="screen-sub">Run the busiest gas station corner store in town! Pump gas, bake pizza, serve the drive-thru, and grow your empire one upgrade at a time.</div>
       <div class="instructions">
         <b>How to play:</b><br>
         🖱️ Click stations to send your clerk there<br>
-        ⛽ <b>Pumps</b> — Activate when cars arrive, don't let them wait!<br>
-        🍕 <b>Pizza Oven</b> — Bake pies and pull them out before they burn! Ready pizza = bonus $$ at the counter<br>
-        ❄️ <b>Coolers</b> — Restock before they empty out<br>
-        🛒 <b>Counter</b> — Serve walk-in customers quickly<br>
-        🚻 <b>Bathroom</b> — Keep it clean or satisfaction drops<br>
-        🧹 <b>Parking / Floor</b> — Sweep and mop to stay tidy<br><br>
-        ⭐ Keep satisfaction high for bonus tips!<br>
-        🎯 Hit your daily earnings goal to advance!
+        ⛽ <b>Pumps</b> — Activate when cars arrive<br>
+        🚘 <b>Drive-Thru</b> — Serve cars at the window<br>
+        🍕 <b>Pizza Oven</b> — Bake pies, pull before they burn!<br>
+        🛒 <b>Counter</b> — Ring up walk-in customers<br>
+        ❄️ <b>Coolers</b> — Restock before they empty<br>
+        🚻🧹🧽 <b>Clean</b> — Bathroom, parking, floors<br><br>
+        💰 Earn money to buy upgrades between days!<br>
+        🍺🌿💸 Unlock new services as you level up!<br>
+        ⭐ Earn stars for great performance!
       </div>
-      <button class="btn btn-primary" onclick="startGame()">Start Day 1</button>
+      <button class="btn btn-primary" onclick="startGame()">Open for Business!</button>
       <div class="high-score" id="title-highscore"></div>
     </div>
 
     <div class="screen-overlay" id="dayend-screen">
       <div class="screen-title" id="dayend-title">Day Complete!</div>
+      <div class="dayend-stars" id="dayend-stars"></div>
       <div class="screen-stats" id="dayend-stats"></div>
-      <button class="btn btn-primary" id="dayend-btn" onclick="nextDay()">Next Day</button>
-      <button class="btn btn-secondary" onclick="restartGame()">Restart</button>
+      <div class="shop-section" id="shop-section">
+        <div class="shop-header">
+          <div class="shop-title">Upgrade Shop</div>
+          <div class="shop-balance" id="shop-balance">$0</div>
+        </div>
+        <div class="shop-grid" id="shop-grid"></div>
+      </div>
+      <button class="btn btn-primary" id="dayend-btn" onclick="nextDay()">Start Next Day</button>
+      <button class="btn btn-secondary" onclick="restartGame()">Restart Game</button>
     </div>
 
     <div class="screen-overlay" id="gameover-screen">
@@ -292,790 +289,688 @@ body{background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-seri
 // CONSTANTS
 // ══════════════════════════════════════════
 const DAY_LENGTH = 90;
-const CLERK_SPEED = 220;
-const CARS = ['🚗','🚙','🚕','🏎️','🚗','🚙'];
+const BASE_CLERK_SPEED = 220;
+const CARS = ['🚗','🚙','🚕','🏎️','🚗','🚙','🛻'];
 
-const PIZZA_COOK_TIME = 12;   // seconds to cook
-const PIZZA_GRACE = 10;       // seconds after cook before it burns
-const PIZZA_READY_TIME = 25;  // seconds pizza stays hot & ready
-const PIZZA_COUNTER_BONUS = 5;// extra $ per counter sale when pizza ready
+const PIZZA_COOK_TIME = 12;
+const PIZZA_GRACE = 10;
+const PIZZA_READY_TIME = 25;
+const PIZZA_COUNTER_BONUS = 5;
 
 const STATION_POS = {
   pump0:{x:122,y:165}, pump1:{x:287,y:165}, pump2:{x:457,y:165}, pump3:{x:627,y:165},
-  parking:{x:212,y:300}, bathroom:{x:602,y:300},
+  parking:{x:142,y:300}, drivethru:{x:384,y:300}, bathroom:{x:642,y:300},
   counter:{x:117,y:475}, pizza:{x:297,y:475}, coolers:{x:477,y:475}, floor:{x:657,y:475}
 };
 
-const TASK_DURATION = {
-  pump0:1, pump1:1, pump2:1, pump3:1,
-  parking:3, bathroom:4,
-  counter:2, coolers:3, floor:3,
-  pizza:2 // default; overridden dynamically
+const BASE_TASK_DURATION = {
+  pump0:1,pump1:1,pump2:1,pump3:1,
+  parking:3,bathroom:4,drivethru:1.5,
+  counter:2,coolers:3,floor:3,pizza:2
 };
+
+// Upgrades
+const UPGRADES = [
+  {id:'speedShoes',  name:'Speed Shoes',   desc:'Clerk 25% faster',         cost:100, day:1, icon:'👟'},
+  {id:'turboPumps',  name:'Turbo Pumps',   desc:'Gas fills 40% faster',     cost:120, day:1, icon:'⚡'},
+  {id:'megaCoolers', name:'Mega Coolers',   desc:'Coolers deplete 40% slower',cost:150,day:2, icon:'🧊'},
+  {id:'quickClean',  name:'Quick Clean',    desc:'Cleaning 30% faster',      cost:90,  day:2, icon:'✨'},
+  {id:'doubleOven',  name:'Double Oven',    desc:'Pizza cooks 40% faster',   cost:180, day:3, icon:'🔥'},
+  {id:'beerVapes',   name:'Beer & Vapes',   desc:'+$4 per customer sale',    cost:250, day:4, icon:'🍺'},
+  {id:'checkCashing',name:'Check Cashing',  desc:'+$5 per counter sale',     cost:300, day:6, icon:'💸'},
+  {id:'cbd',         name:'CBD Display',    desc:'Passive +$2 every 12s',    cost:200, day:8, icon:'🌿'},
+];
 
 function dayConfig(day) {
   return {
-    carInterval: Math.max(4, 15 - day * 1.8),
-    counterInterval: Math.max(6, 20 - day * 2),
+    carInterval: Math.max(3.5, 15 - day * 1.8),
+    counterInterval: Math.max(5, 20 - day * 2),
+    dtInterval: Math.max(5, 18 - day * 1.5),
     degradeMultiplier: 1 + day * 0.25,
-    patience: Math.max(10, 28 - day * 2),
+    patience: Math.max(8, 28 - day * 2),
     goal: 40 + day * 35
   };
 }
 
 // ══════════════════════════════════════════
-// GAME STATE
+// STATE
 // ══════════════════════════════════════════
 let G = {};
 
 function freshState() {
   return {
-    screen: 'title',
-    day: 1,
-    totalMoney: 0,
-    dayMoney: 0,
-    satisfaction: 100,
-    timeLeft: DAY_LENGTH,
-    customersServed: 0,
-    dayCustomers: 0,
-    pizzasMade: 0,
-    dayPizzas: 0,
+    screen:'title', day:1, totalMoney:0, dayMoney:0, satisfaction:100,
+    timeLeft:DAY_LENGTH, customersServed:0, dayCustomers:0, pizzasMade:0, dayPizzas:0,
+    totalStars:0, dayStars:[],
 
-    clerk: { x:400, y:510, targetKey:null, arrived:false, taskProgress:0, taskDuration:0 },
+    clerk:{x:400,y:510,targetKey:null,arrived:false,taskProgress:0,taskDuration:0},
 
-    pumps: [
-      {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🚗', payment:0},
-      {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🚙', payment:0},
-      {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🚕', payment:0},
-      {state:'empty', patience:0, maxPatience:28, fillProgress:0, carType:'🏎️', payment:0}
+    pumps:[
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚗',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚙',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚕',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🏎️',payment:0}
     ],
 
-    // Pizza oven: empty → cooking → (done phase within cooking) → ready | burnt
-    pizza: { state:'empty', cookProgress:0, readyTimer:0 },
+    pizza:{state:'empty',cookProgress:0,readyTimer:0},
 
-    coolerStock: 100,
-    counterQueue: 0,
-    counterPatience: 0,
-    counterMaxPatience: 20,
-    bathroomClean: 100,
-    floorClean: 100,
-    parkingClean: 100,
+    driveThru:{queue:0,patience:0,maxPatience:20,carType:'🚗'},
 
-    nextCarTimer: 5,
-    nextCounterTimer: 12,
+    coolerStock:100, counterQueue:0, counterPatience:0, counterMaxPatience:20,
+    bathroomClean:100, floorClean:100, parkingClean:100,
 
-    paused: false,
-    dayStarted: false
+    nextCarTimer:5, nextCounterTimer:12, nextDTTimer:10,
+    cbdTimer:12,
+
+    upgrades:{speedShoes:false,turboPumps:false,megaCoolers:false,quickClean:false,
+              doubleOven:false,beerVapes:false,checkCashing:false,cbd:false},
+
+    paused:false, dayStarted:false
   };
 }
 
 // ══════════════════════════════════════════
-// DOM REFS
+// HELPERS
 // ══════════════════════════════════════════
 const $ = id => document.getElementById(id);
 const gameArea = $('game-area');
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function randFloat(a,b){return Math.random()*(b-a)+a}
+function clerkSpeed(){return BASE_CLERK_SPEED * (G.upgrades.speedShoes ? 1.25 : 1)}
+function taskDur(key){
+  let d = BASE_TASK_DURATION[key] || 2;
+  if (key === 'pizza') d = getPizzaTaskDur();
+  if (['parking','bathroom','floor'].includes(key) && G.upgrades.quickClean) d *= 0.7;
+  return d;
+}
+function getPizzaTaskDur(){
+  const p = G.pizza;
+  if (p.state === 'empty') return G.upgrades.doubleOven ? 1.5 : 2;
+  if (p.state === 'cooking' && p.cookProgress >= pizzaCookTime()) return 0.8;
+  if (p.state === 'burnt') return 2;
+  return 2;
+}
+function pizzaCookTime(){return PIZZA_COOK_TIME * (G.upgrades.doubleOven ? 0.6 : 1)}
+function pumpFillTime(){return G.upgrades.turboPumps ? 3 : 5}
+function saleBonus(){return (G.upgrades.beerVapes ? 4 : 0) + (G.upgrades.checkCashing ? 5 : 0)}
 
 // ══════════════════════════════════════════
-// INITIALIZATION
+// INIT
 // ══════════════════════════════════════════
-function init() {
-  // Road dashes
+function init(){
   const road = $('road');
-  for (let i = 0; i < 20; i++) {
-    const d = document.createElement('div');
-    d.className = 'road-dash';
-    d.style.left = (i * 42 + 10) + 'px';
-    road.appendChild(d);
-  }
+  for(let i=0;i<20;i++){const d=document.createElement('div');d.className='road-dash';d.style.left=(i*42+10)+'px';road.appendChild(d)}
 
-  // Station click handlers
-  document.querySelectorAll('.station').forEach(el => {
-    el.addEventListener('click', () => {
-      if (G.screen !== 'playing') return;
-      const id = el.id;
-      let key = null;
-      if (id.startsWith('pump-')) key = 'pump' + id.split('-')[1];
-      else if (id === 'parking-station') key = 'parking';
-      else if (id === 'bathroom-station') key = 'bathroom';
-      else if (id === 'counter-station') key = 'counter';
-      else if (id === 'pizza-station') key = 'pizza';
-      else if (id === 'cooler-station') key = 'coolers';
-      else if (id === 'floor-station') key = 'floor';
-      if (key) assignClerk(key);
+  document.querySelectorAll('.station').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(G.screen!=='playing')return;
+      const id=el.id;let key=null;
+      if(id.startsWith('pump-'))key='pump'+id.split('-')[1];
+      else if(id==='parking-station')key='parking';
+      else if(id==='drivethru-station')key='drivethru';
+      else if(id==='bathroom-station')key='bathroom';
+      else if(id==='counter-station')key='counter';
+      else if(id==='pizza-station')key='pizza';
+      else if(id==='cooler-station')key='coolers';
+      else if(id==='floor-station')key='floor';
+      if(key)assignClerk(key);
     });
   });
 
-  // High score display
-  const hs = localStorage.getItem('gsf-highscore');
-  if (hs) $('title-highscore').innerHTML = 'High Score: <span>$' + hs + '</span>';
+  const hs=localStorage.getItem('pc-highscore');
+  const ts=localStorage.getItem('pc-totalstars');
+  let info=[];
+  if(hs)info.push('Best Bank: <span>$'+hs+'</span>');
+  if(ts)info.push('Total Stars: <span>'+ts+' ⭐</span>');
+  if(info.length)$('title-highscore').innerHTML=info.join(' &nbsp;|&nbsp; ');
 
-  // Responsive scaling
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize',resize);
 }
 
-function resize() {
-  const w = document.getElementById('game-wrapper');
-  const scaleX = window.innerWidth / 820;
-  const scaleY = window.innerHeight / 640;
-  const s = Math.min(scaleX, scaleY, 1);
-  w.style.transform = 'scale(' + s + ')';
+function resize(){
+  const w=document.getElementById('game-wrapper');
+  const s=Math.min(window.innerWidth/820,window.innerHeight/640,1);
+  w.style.transform='scale('+s+')';
 }
 
 // ══════════════════════════════════════════
-// SCREEN MANAGEMENT
+// SCREENS
 // ══════════════════════════════════════════
-function showScreen(name) {
-  ['title-screen','dayend-screen','gameover-screen'].forEach(id => {
-    $(id).classList.toggle('show', id.startsWith(name.replace('Screen','')));
+function hideAll(){['title-screen','dayend-screen','gameover-screen'].forEach(id=>$(id).classList.remove('show'))}
+function showScr(id){$(id).classList.add('show')}
+
+window.startGame=function(){
+  G=freshState();G.screen='playing';G.dayStarted=true;
+  hideAll();showDayBanner();
+};
+window.restartGame=function(){
+  G=freshState();G.screen='title';hideAll();showScr('title-screen');
+  const hs=localStorage.getItem('pc-highscore');
+  const ts=localStorage.getItem('pc-totalstars');
+  let info=[];
+  if(hs)info.push('Best Bank: <span>$'+hs+'</span>');
+  if(ts)info.push('Total Stars: <span>'+ts+' ⭐</span>');
+  $('title-highscore').innerHTML=info.length?info.join(' &nbsp;|&nbsp; '):'';
+};
+window.nextDay=function(){
+  G.day++;G.dayMoney=0;G.dayCustomers=0;G.dayPizzas=0;
+  G.timeLeft=DAY_LENGTH;G.satisfaction=Math.min(100,G.satisfaction+10);
+  G.clerk={x:400,y:510,targetKey:null,arrived:false,taskProgress:0,taskDuration:0};
+  G.pumps.forEach(p=>{p.state='empty';p.patience=0;p.fillProgress=0});
+  G.pizza={state:'empty',cookProgress:0,readyTimer:0};
+  G.driveThru={queue:0,patience:0,maxPatience:20,carType:'🚗'};
+  G.coolerStock=Math.min(100,G.coolerStock+30);
+  G.counterQueue=0;G.counterPatience=0;
+  G.bathroomClean=Math.min(100,G.bathroomClean+20);
+  G.floorClean=Math.min(100,G.floorClean+20);
+  G.parkingClean=Math.min(100,G.parkingClean+20);
+  G.nextCarTimer=3;G.nextCounterTimer=8;G.nextDTTimer=6;G.cbdTimer=12;
+  G.screen='playing';G.paused=false;
+  hideAll();showDayBanner();
+};
+
+function showDayBanner(){
+  const b=$('day-banner');b.textContent='Day '+G.day;
+  b.classList.remove('show');void b.offsetWidth;b.classList.add('show');
+}
+
+function endDay(){
+  G.paused=true;
+  const cfg=dayConfig(G.day);
+  const tipRate=G.satisfaction/100;
+  const tips=Math.round(G.dayMoney*tipRate*0.2);
+  const total=G.dayMoney+tips;
+  const metGoal=total>=cfg.goal;
+
+  // Stars
+  let stars=0;
+  if(metGoal)stars=1;
+  if(metGoal&&G.satisfaction>70)stars=2;
+  if(metGoal&&G.satisfaction>85)stars=3;
+  G.dayStars.push(stars);
+  G.totalStars=G.dayStars.reduce((a,b)=>a+b,0);
+
+  const hs=parseInt(localStorage.getItem('pc-highscore')||'0');
+  if(G.totalMoney+tips>hs)localStorage.setItem('pc-highscore',G.totalMoney+tips);
+  const ts=parseInt(localStorage.getItem('pc-totalstars')||'0');
+  if(G.totalStars>ts)localStorage.setItem('pc-totalstars',G.totalStars);
+
+  G.totalMoney+=tips;
+
+  $('dayend-title').textContent=metGoal?'🎉 Day '+G.day+' Complete!':'😅 Day '+G.day+' Over';
+  $('dayend-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  $('dayend-stats').innerHTML=
+    'Earnings: <span>$'+G.dayMoney+'</span><br>'+
+    'Tip Bonus ('+Math.round(tipRate*100)+'%): <span>+$'+tips+'</span><br>'+
+    'Day Total: <span>$'+total+'</span> / Goal: $'+cfg.goal+'<br>'+
+    'Customers: <span>'+G.dayCustomers+'</span> &nbsp; Pizzas: <span class="pizza-stat">'+G.dayPizzas+' 🍕</span><br>'+
+    'Satisfaction: <span>'+Math.round(G.satisfaction)+'%</span> &nbsp; Bank: <span>$'+G.totalMoney+'</span>';
+
+  $('dayend-btn').textContent=metGoal?'Start Day '+(G.day+1)+' →':'Retry Day '+G.day;
+  $('dayend-btn').onclick=metGoal?window.nextDay:function(){G.day--;window.nextDay()};
+
+  renderShop();
+  G.screen='dayend';hideAll();showScr('dayend-screen');
+}
+
+function gameOver(reason){
+  G.paused=true;
+  const hs=parseInt(localStorage.getItem('pc-highscore')||'0');
+  if(G.totalMoney>hs)localStorage.setItem('pc-highscore',G.totalMoney);
+  const ts=parseInt(localStorage.getItem('pc-totalstars')||'0');
+  if(G.totalStars>ts)localStorage.setItem('pc-totalstars',G.totalStars);
+
+  $('gameover-reason').textContent=reason;
+  $('gameover-stats').innerHTML=
+    'Survived: <span>'+G.day+' day'+(G.day>1?'s':'')+'</span><br>'+
+    'Total Earned: <span>$'+G.totalMoney+'</span><br>'+
+    'Customers: <span>'+G.customersServed+'</span> &nbsp; Pizzas: <span class="pizza-stat">'+G.pizzasMade+' 🍕</span><br>'+
+    'Total Stars: <span>'+G.totalStars+' ⭐</span>';
+  G.screen='gameover';hideAll();showScr('gameover-screen');
+}
+
+// ══════════════════════════════════════════
+// UPGRADE SHOP
+// ══════════════════════════════════════════
+function renderShop(){
+  $('shop-balance').textContent='Balance: $'+G.totalMoney;
+  const grid=$('shop-grid');grid.innerHTML='';
+  UPGRADES.forEach(u=>{
+    const owned=G.upgrades[u.id];
+    const locked=G.day<u.day;
+    const canAfford=G.totalMoney>=u.cost;
+    const div=document.createElement('div');
+    div.className='shop-item'+(owned?' owned':'');
+    let btnClass,btnText;
+    if(owned){btnClass='owned-btn';btnText='OWNED'}
+    else if(locked){btnClass='locked';btnText='Day '+u.day}
+    else if(!canAfford){btnClass='poor';btnText='$'+u.cost}
+    else{btnClass='buy';btnText='$'+u.cost}
+    div.innerHTML=
+      '<span class="shop-icon">'+u.icon+'</span>'+
+      '<div class="shop-info"><div class="shop-name">'+u.name+'</div><div class="shop-desc">'+u.desc+'</div></div>'+
+      '<button class="shop-btn '+btnClass+'" '+(owned||locked||!canAfford?'disabled':'')+
+      ' data-uid="'+u.id+'" data-cost="'+u.cost+'">'+btnText+'</button>';
+    if(!owned&&!locked&&canAfford){
+      div.querySelector('button').addEventListener('click',function(){
+        buyUpgrade(u.id,u.cost);
+      });
+    }
+    grid.appendChild(div);
   });
-  if (name === 'title') $('title-screen').classList.add('show');
-  if (name === 'dayend') $('dayend-screen').classList.add('show');
-  if (name === 'gameover') $('gameover-screen').classList.add('show');
 }
 
-function hideAllScreens() {
-  ['title-screen','dayend-screen','gameover-screen'].forEach(id => $(id).classList.remove('show'));
-}
-
-window.startGame = function() {
-  G = freshState();
-  G.screen = 'playing';
-  G.dayStarted = true;
-  hideAllScreens();
-  showDayBanner();
-};
-
-window.restartGame = function() {
-  G = freshState();
-  G.screen = 'title';
-  hideAllScreens();
-  showScreen('title');
-  const hs = localStorage.getItem('gsf-highscore');
-  if (hs) $('title-highscore').innerHTML = 'High Score: <span>$' + hs + '</span>';
-};
-
-window.nextDay = function() {
-  G.day++;
-  G.dayMoney = 0;
-  G.dayCustomers = 0;
-  G.dayPizzas = 0;
-  G.timeLeft = DAY_LENGTH;
-  G.satisfaction = Math.min(100, G.satisfaction + 10);
-  G.clerk = { x:400, y:510, targetKey:null, arrived:false, taskProgress:0, taskDuration:0 };
-  G.pumps.forEach(p => { p.state = 'empty'; p.patience = 0; p.fillProgress = 0; });
-  G.pizza = { state:'empty', cookProgress:0, readyTimer:0 };
-  G.coolerStock = Math.min(100, G.coolerStock + 30);
-  G.counterQueue = 0;
-  G.counterPatience = 0;
-  G.bathroomClean = Math.min(100, G.bathroomClean + 20);
-  G.floorClean = Math.min(100, G.floorClean + 20);
-  G.parkingClean = Math.min(100, G.parkingClean + 20);
-  G.nextCarTimer = 3;
-  G.nextCounterTimer = 8;
-  G.screen = 'playing';
-  G.paused = false;
-  hideAllScreens();
-  showDayBanner();
-};
-
-function showDayBanner() {
-  const banner = $('day-banner');
-  banner.textContent = 'Day ' + G.day;
-  banner.classList.remove('show');
-  void banner.offsetWidth;
-  banner.classList.add('show');
-}
-
-function endDay() {
-  G.paused = true;
-  const cfg = dayConfig(G.day);
-  const tipRate = G.satisfaction / 100;
-  const tips = Math.round(G.dayMoney * tipRate * 0.2);
-  const total = G.dayMoney + tips;
-  const metGoal = total >= cfg.goal;
-
-  const hs = parseInt(localStorage.getItem('gsf-highscore') || '0');
-  if (G.totalMoney + tips > hs) localStorage.setItem('gsf-highscore', G.totalMoney + tips);
-
-  G.totalMoney += tips;
-
-  $('dayend-title').textContent = metGoal ? '🎉 Day ' + G.day + ' Complete!' : '😅 Day ' + G.day + ' Over';
-  $('dayend-stats').innerHTML =
-    'Earnings: <span>$' + G.dayMoney + '</span><br>' +
-    'Tip Bonus (' + Math.round(tipRate * 100) + '%): <span>+$' + tips + '</span><br>' +
-    'Day Total: <span>$' + total + '</span> / Goal: $' + cfg.goal + '<br>' +
-    'Customers Served: <span>' + G.dayCustomers + '</span><br>' +
-    'Pizzas Made: <span class="pizza-stat">' + G.dayPizzas + ' 🍕</span><br>' +
-    'Satisfaction: <span>' + Math.round(G.satisfaction) + '%</span><br>' +
-    'Total Bank: <span>$' + G.totalMoney + '</span>';
-
-  $('dayend-btn').textContent = metGoal ? 'Next Day →' : 'Try Again';
-  $('dayend-btn').onclick = metGoal ? window.nextDay : function() {
-    G.day--;
-    window.nextDay();
-  };
-
-  G.screen = 'dayend';
-  showScreen('dayend');
-}
-
-function gameOver(reason) {
-  G.paused = true;
-  const hs = parseInt(localStorage.getItem('gsf-highscore') || '0');
-  if (G.totalMoney > hs) localStorage.setItem('gsf-highscore', G.totalMoney);
-
-  $('gameover-reason').textContent = reason;
-  $('gameover-stats').innerHTML =
-    'Survived: <span>' + G.day + ' day' + (G.day > 1 ? 's' : '') + '</span><br>' +
-    'Total Earned: <span>$' + G.totalMoney + '</span><br>' +
-    'Customers Served: <span>' + G.customersServed + '</span><br>' +
-    'Pizzas Made: <span class="pizza-stat">' + G.pizzasMade + ' 🍕</span>';
-
-  G.screen = 'gameover';
-  showScreen('gameover');
+function buyUpgrade(id,cost){
+  if(G.upgrades[id]||G.totalMoney<cost)return;
+  G.totalMoney-=cost;G.upgrades[id]=true;
+  renderShop();
+  // Update stats display
+  $('dayend-stats').innerHTML=$('dayend-stats').innerHTML.replace(/Bank: <span>\$\d+/,'Bank: <span>$'+G.totalMoney);
 }
 
 // ══════════════════════════════════════════
-// CLERK SYSTEM
+// CLERK
 // ══════════════════════════════════════════
-function getPizzaTaskDuration() {
-  if (G.pizza.state === 'empty') return 2;
-  if (G.pizza.state === 'cooking' && G.pizza.cookProgress >= PIZZA_COOK_TIME) return 1;
-  if (G.pizza.state === 'burnt') return 2;
-  return 2;
+function assignClerk(key){
+  if(!canDoTask(key))return;
+  const c=G.clerk;
+  if(c.targetKey===key&&c.arrived&&c.taskProgress>0)return;
+  c.targetKey=key;c.arrived=false;c.taskProgress=0;
+  c.taskDuration=taskDur(key);
+  document.querySelectorAll('.station.active').forEach(el=>el.classList.remove('active'));
+  const el=stationEl(key);if(el)el.classList.add('active');
 }
 
-function assignClerk(stationKey) {
-  if (!canDoTask(stationKey)) return;
-  const c = G.clerk;
-  if (c.targetKey === stationKey && c.arrived && c.taskProgress > 0) return;
-  c.targetKey = stationKey;
-  c.arrived = false;
-  c.taskProgress = 0;
-  c.taskDuration = stationKey === 'pizza' ? getPizzaTaskDuration() : TASK_DURATION[stationKey];
-  document.querySelectorAll('.station.active').forEach(el => el.classList.remove('active'));
-  const el = stationElement(stationKey);
-  if (el) el.classList.add('active');
-}
-
-function canDoTask(key) {
-  if (key.startsWith('pump')) {
-    const idx = parseInt(key.replace('pump',''));
-    return G.pumps[idx].state === 'waiting';
-  }
-  if (key === 'counter') return G.counterQueue > 0;
-  if (key === 'coolers') return G.coolerStock < 90;
-  if (key === 'bathroom') return G.bathroomClean < 90;
-  if (key === 'floor') return G.floorClean < 90;
-  if (key === 'parking') return G.parkingClean < 90;
-  if (key === 'pizza') {
-    const p = G.pizza;
-    return p.state === 'empty' ||
-           (p.state === 'cooking' && p.cookProgress >= PIZZA_COOK_TIME) ||
-           p.state === 'burnt';
+function canDoTask(key){
+  if(key.startsWith('pump')){const i=+key.replace('pump','');return G.pumps[i].state==='waiting'}
+  if(key==='counter')return G.counterQueue>0;
+  if(key==='drivethru')return G.driveThru.queue>0;
+  if(key==='coolers')return G.coolerStock<90;
+  if(key==='bathroom')return G.bathroomClean<90;
+  if(key==='floor')return G.floorClean<90;
+  if(key==='parking')return G.parkingClean<90;
+  if(key==='pizza'){
+    const p=G.pizza;
+    return p.state==='empty'||(p.state==='cooking'&&p.cookProgress>=pizzaCookTime())||p.state==='burnt';
   }
   return false;
 }
 
-function stationElement(key) {
-  if (key.startsWith('pump')) return $('pump-' + key.replace('pump',''));
-  if (key === 'parking') return $('parking-station');
-  if (key === 'bathroom') return $('bathroom-station');
-  if (key === 'counter') return $('counter-station');
-  if (key === 'pizza') return $('pizza-station');
-  if (key === 'coolers') return $('cooler-station');
-  if (key === 'floor') return $('floor-station');
+function stationEl(key){
+  if(key.startsWith('pump'))return $('pump-'+key.replace('pump',''));
+  if(key==='parking')return $('parking-station');
+  if(key==='drivethru')return $('drivethru-station');
+  if(key==='bathroom')return $('bathroom-station');
+  if(key==='counter')return $('counter-station');
+  if(key==='pizza')return $('pizza-station');
+  if(key==='coolers')return $('cooler-station');
+  if(key==='floor')return $('floor-station');
   return null;
 }
 
-function updateClerk(dt) {
-  const c = G.clerk;
-  if (!c.targetKey) return;
-
-  const target = STATION_POS[c.targetKey];
-  if (!target) return;
-
-  if (!c.arrived) {
-    const dx = target.x - c.x;
-    const dy = target.y - c.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 5) {
-      c.x = target.x;
-      c.y = target.y;
-      c.arrived = true;
-      c.taskProgress = 0;
-    } else {
-      const speed = CLERK_SPEED * dt;
-      c.x += (dx / dist) * speed;
-      c.y += (dy / dist) * speed;
-    }
-  } else {
-    if (!canDoTask(c.targetKey)) {
-      completeClerkTask();
-      return;
-    }
-    c.taskProgress += dt;
-    if (c.taskProgress >= c.taskDuration) {
-      completeClerkTask();
-    }
+function updateClerk(dt){
+  const c=G.clerk;if(!c.targetKey)return;
+  const t=STATION_POS[c.targetKey];if(!t)return;
+  if(!c.arrived){
+    const dx=t.x-c.x,dy=t.y-c.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<5){c.x=t.x;c.y=t.y;c.arrived=true;c.taskProgress=0}
+    else{const s=clerkSpeed()*dt;c.x+=(dx/dist)*s;c.y+=(dy/dist)*s}
+  }else{
+    if(!canDoTask(c.targetKey)){completeTask();return}
+    c.taskProgress+=dt;
+    if(c.taskProgress>=c.taskDuration)completeTask();
   }
 }
 
-function completeClerkTask() {
-  const c = G.clerk;
-  const key = c.targetKey;
-  if (!key) return;
+function completeTask(){
+  const c=G.clerk,key=c.targetKey;if(!key)return;
+  const pos=STATION_POS[key];
 
-  if (key.startsWith('pump')) {
-    const idx = parseInt(key.replace('pump',''));
-    if (G.pumps[idx].state === 'waiting') {
-      G.pumps[idx].state = 'filling';
-      G.pumps[idx].fillProgress = 0;
+  if(key.startsWith('pump')){
+    const i=+key.replace('pump','');
+    if(G.pumps[i].state==='waiting'){G.pumps[i].state='filling';G.pumps[i].fillProgress=0}
+  }else if(key==='coolers'){
+    G.coolerStock=100;spawnFloat(pos.x,pos.y-30,'Restocked!',false);
+  }else if(key==='counter'){
+    if(G.counterQueue>0&&G.coolerStock>0){
+      G.counterQueue--;G.coolerStock=Math.max(0,G.coolerStock-randInt(12,20));
+      let pay=randInt(3,9)+saleBonus();
+      if(G.pizza.state==='ready')pay+=PIZZA_COUNTER_BONUS;
+      earnMoney(pay,pos.x,pos.y-30,G.pizza.state==='ready');
     }
-  } else if (key === 'coolers') {
-    G.coolerStock = 100;
-    spawnFloat(STATION_POS.coolers.x, STATION_POS.coolers.y - 30, 'Restocked!', false);
-  } else if (key === 'counter') {
-    if (G.counterQueue > 0 && G.coolerStock > 0) {
-      G.counterQueue--;
-      G.coolerStock = Math.max(0, G.coolerStock - randInt(12, 20));
-      let pay = randInt(3, 9);
-      if (G.pizza.state === 'ready') pay += PIZZA_COUNTER_BONUS;
-      earnMoney(pay, STATION_POS.counter.x, STATION_POS.counter.y - 30,
-                G.pizza.state === 'ready');
+  }else if(key==='drivethru'){
+    if(G.driveThru.queue>0){
+      G.driveThru.queue--;
+      let pay=randInt(4,10)+saleBonus();
+      if(G.pizza.state==='ready')pay+=3;
+      earnMoney(pay,pos.x,pos.y-30,G.pizza.state==='ready');
     }
-  } else if (key === 'pizza') {
-    const p = G.pizza;
-    if (p.state === 'empty') {
-      p.state = 'cooking';
-      p.cookProgress = 0;
-      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'Pizza in!', false, true);
-    } else if (p.state === 'cooking' && p.cookProgress >= PIZZA_COOK_TIME) {
-      p.state = 'ready';
-      p.readyTimer = PIZZA_READY_TIME;
-      G.pizzasMade++;
-      G.dayPizzas++;
-      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'HOT & READY!', false, true);
-    } else if (p.state === 'burnt') {
-      p.state = 'empty';
-      p.cookProgress = 0;
-      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, 'Cleaned!', false, true);
+  }else if(key==='pizza'){
+    const p=G.pizza;
+    if(p.state==='empty'){
+      p.state='cooking';p.cookProgress=0;
+      spawnFloat(pos.x,pos.y-30,'Pizza in!',false,true);
+    }else if(p.state==='cooking'&&p.cookProgress>=pizzaCookTime()){
+      p.state='ready';p.readyTimer=PIZZA_READY_TIME;
+      G.pizzasMade++;G.dayPizzas++;
+      spawnFloat(pos.x,pos.y-30,'HOT & READY!',false,true);
+    }else if(p.state==='burnt'){
+      p.state='empty';p.cookProgress=0;
+      spawnFloat(pos.x,pos.y-30,'Cleaned!',false,true);
     }
-  } else if (key === 'bathroom') {
-    G.bathroomClean = 100;
-    spawnFloat(STATION_POS.bathroom.x, STATION_POS.bathroom.y - 30, 'Sparkling!', false);
-  } else if (key === 'floor') {
-    G.floorClean = 100;
-    spawnFloat(STATION_POS.floor.x, STATION_POS.floor.y - 30, 'Spotless!', false);
-  } else if (key === 'parking') {
-    G.parkingClean = 100;
-    spawnFloat(STATION_POS.parking.x, STATION_POS.parking.y - 30, 'Swept!', false);
+  }else if(key==='bathroom'){
+    G.bathroomClean=100;spawnFloat(pos.x,pos.y-30,'Sparkling!',false);
+  }else if(key==='floor'){
+    G.floorClean=100;spawnFloat(pos.x,pos.y-30,'Spotless!',false);
+  }else if(key==='parking'){
+    G.parkingClean=100;spawnFloat(pos.x,pos.y-30,'Swept!',false);
   }
 
-  const el = stationElement(key);
-  if (el) el.classList.remove('active');
-
-  c.targetKey = null;
-  c.arrived = false;
-  c.taskProgress = 0;
+  const el=stationEl(key);if(el)el.classList.remove('active');
+  c.targetKey=null;c.arrived=false;c.taskProgress=0;
 }
 
 // ══════════════════════════════════════════
-// CUSTOMER SYSTEM
+// CUSTOMERS
 // ══════════════════════════════════════════
-function spawnCar() {
-  const cfg = dayConfig(G.day);
-  const empties = [];
-  G.pumps.forEach((p, i) => { if (p.state === 'empty') empties.push(i); });
-  if (empties.length === 0) return;
-  const idx = empties[randInt(0, empties.length - 1)];
-  const pump = G.pumps[idx];
-  pump.state = 'waiting';
-  pump.patience = cfg.patience + randInt(-3, 3);
-  pump.maxPatience = pump.patience;
-  pump.fillProgress = 0;
-  pump.carType = CARS[randInt(0, CARS.length - 1)];
-  pump.payment = randInt(8, 20);
-  $('car-' + idx).textContent = pump.carType;
+function spawnCar(){
+  const cfg=dayConfig(G.day);
+  const empties=[];G.pumps.forEach((p,i)=>{if(p.state==='empty')empties.push(i)});
+  if(!empties.length)return;
+  const i=empties[randInt(0,empties.length-1)],p=G.pumps[i];
+  p.state='waiting';p.patience=cfg.patience+randInt(-3,3);p.maxPatience=p.patience;
+  p.fillProgress=0;p.carType=CARS[randInt(0,CARS.length-1)];p.payment=randInt(8,20);
+  $('car-'+i).textContent=p.carType;
 }
 
-function spawnCounterCustomer() {
-  if (G.counterQueue >= 3) return;
-  const cfg = dayConfig(G.day);
-  G.counterQueue++;
-  G.counterPatience = cfg.patience * 0.8;
-  G.counterMaxPatience = G.counterPatience;
+function spawnCounterCustomer(){
+  if(G.counterQueue>=3)return;
+  const cfg=dayConfig(G.day);
+  G.counterQueue++;G.counterPatience=cfg.patience*0.8;G.counterMaxPatience=G.counterPatience;
 }
 
-function updateCustomers(dt) {
-  const cfg = dayConfig(G.day);
+function spawnDTCustomer(){
+  if(G.driveThru.queue>=2)return;
+  const cfg=dayConfig(G.day);
+  G.driveThru.queue++;G.driveThru.patience=cfg.patience*0.7;
+  G.driveThru.maxPatience=G.driveThru.patience;
+  G.driveThru.carType=CARS[randInt(0,CARS.length-1)];
+}
 
-  // Spawn cars
-  G.nextCarTimer -= dt;
-  if (G.nextCarTimer <= 0) {
-    spawnCar();
-    G.nextCarTimer = cfg.carInterval + randFloat(-2, 2);
-  }
+function updateCustomers(dt){
+  const cfg=dayConfig(G.day);
 
-  // Spawn counter customers (pizza being ready attracts more)
-  G.nextCounterTimer -= dt;
-  if (G.nextCounterTimer <= 0) {
+  G.nextCarTimer-=dt;
+  if(G.nextCarTimer<=0){spawnCar();G.nextCarTimer=cfg.carInterval+randFloat(-2,2)}
+  G.nextCounterTimer-=dt;
+  if(G.nextCounterTimer<=0){
     spawnCounterCustomer();
-    const interval = G.pizza.state === 'ready'
-      ? cfg.counterInterval * 0.65
-      : cfg.counterInterval;
-    G.nextCounterTimer = interval + randFloat(-2, 2);
+    const int=G.pizza.state==='ready'?cfg.counterInterval*0.65:cfg.counterInterval;
+    G.nextCounterTimer=int+randFloat(-2,2);
   }
+  G.nextDTTimer-=dt;
+  if(G.nextDTTimer<=0){spawnDTCustomer();G.nextDTTimer=cfg.dtInterval+randFloat(-2,2)}
 
-  // Update pump patience & filling
-  G.pumps.forEach((p, i) => {
-    if (p.state === 'waiting') {
-      p.patience -= dt;
-      if (p.patience <= 0) {
-        p.state = 'empty';
-        G.satisfaction = Math.max(0, G.satisfaction - 8);
-        spawnFloat(STATION_POS['pump' + i].x, STATION_POS['pump' + i].y - 30, '😠 Left!', true);
-        if (G.clerk.targetKey === 'pump' + i) {
-          const el = stationElement('pump' + i);
-          if (el) el.classList.remove('active');
-          G.clerk.targetKey = null;
-          G.clerk.arrived = false;
+  // Pumps
+  G.pumps.forEach((p,i)=>{
+    if(p.state==='waiting'){
+      p.patience-=dt;
+      if(p.patience<=0){
+        p.state='empty';G.satisfaction=Math.max(0,G.satisfaction-8);
+        spawnFloat(STATION_POS['pump'+i].x,STATION_POS['pump'+i].y-30,'😠 Left!',true);
+        if(G.clerk.targetKey==='pump'+i){
+          const el=stationEl('pump'+i);if(el)el.classList.remove('active');
+          G.clerk.targetKey=null;G.clerk.arrived=false;
         }
       }
-    } else if (p.state === 'filling') {
-      p.fillProgress += dt;
-      if (p.fillProgress >= 5) {
-        p.state = 'empty';
-        earnMoney(p.payment, STATION_POS['pump' + i].x, STATION_POS['pump' + i].y - 30);
-        G.satisfaction = Math.min(100, G.satisfaction + 1.5);
+    }else if(p.state==='filling'){
+      p.fillProgress+=dt;
+      if(p.fillProgress>=pumpFillTime()){
+        p.state='empty';
+        earnMoney(p.payment,STATION_POS['pump'+i].x,STATION_POS['pump'+i].y-30);
+        G.satisfaction=Math.min(100,G.satisfaction+1.5);
       }
     }
   });
 
-  // Update counter patience
-  if (G.counterQueue > 0) {
-    G.counterPatience -= dt;
-    if (G.counterPatience <= 0) {
-      G.counterQueue = Math.max(0, G.counterQueue - 1);
-      G.satisfaction = Math.max(0, G.satisfaction - 5);
-      spawnFloat(STATION_POS.counter.x, STATION_POS.counter.y - 30, '😠 Left!', true);
-      if (G.counterQueue > 0) {
-        G.counterPatience = cfg.patience * 0.8;
-        G.counterMaxPatience = G.counterPatience;
+  // Counter patience
+  if(G.counterQueue>0){
+    G.counterPatience-=dt;
+    if(G.counterPatience<=0){
+      G.counterQueue=Math.max(0,G.counterQueue-1);
+      G.satisfaction=Math.max(0,G.satisfaction-5);
+      spawnFloat(STATION_POS.counter.x,STATION_POS.counter.y-30,'😠 Left!',true);
+      if(G.counterQueue>0){G.counterPatience=cfg.patience*0.8;G.counterMaxPatience=G.counterPatience}
+      if(G.clerk.targetKey==='counter'&&G.counterQueue===0){
+        const el=stationEl('counter');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
       }
-      if (G.clerk.targetKey === 'counter' && G.counterQueue === 0) {
-        const el = stationElement('counter');
-        if (el) el.classList.remove('active');
-        G.clerk.targetKey = null;
-        G.clerk.arrived = false;
+    }
+  }
+
+  // Drive-thru patience
+  if(G.driveThru.queue>0){
+    G.driveThru.patience-=dt;
+    if(G.driveThru.patience<=0){
+      G.driveThru.queue=Math.max(0,G.driveThru.queue-1);
+      G.satisfaction=Math.max(0,G.satisfaction-6);
+      spawnFloat(STATION_POS.drivethru.x,STATION_POS.drivethru.y-30,'😠 Left!',true);
+      if(G.driveThru.queue>0){G.driveThru.patience=cfg.patience*0.7;G.driveThru.maxPatience=G.driveThru.patience}
+      if(G.clerk.targetKey==='drivethru'&&G.driveThru.queue===0){
+        const el=stationEl('drivethru');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
       }
     }
   }
 }
 
 // ══════════════════════════════════════════
-// PIZZA OVEN SYSTEM
+// PIZZA
 // ══════════════════════════════════════════
-function updatePizza(dt) {
-  const p = G.pizza;
-
-  if (p.state === 'cooking') {
-    p.cookProgress += dt;
-    // Burns if left too long after being done
-    if (p.cookProgress >= PIZZA_COOK_TIME + PIZZA_GRACE) {
-      p.state = 'burnt';
-      G.satisfaction = Math.max(0, G.satisfaction - 5);
-      spawnFloat(STATION_POS.pizza.x, STATION_POS.pizza.y - 30, '🔥 Burnt!', true, true);
-      // Cancel clerk task if heading to pizza for a pull-out
-      if (G.clerk.targetKey === 'pizza') {
-        const el = stationElement('pizza');
-        if (el) el.classList.remove('active');
-        G.clerk.targetKey = null;
-        G.clerk.arrived = false;
+function updatePizza(dt){
+  const p=G.pizza;
+  if(p.state==='cooking'){
+    p.cookProgress+=dt;
+    if(p.cookProgress>=pizzaCookTime()+PIZZA_GRACE){
+      p.state='burnt';G.satisfaction=Math.max(0,G.satisfaction-5);
+      spawnFloat(STATION_POS.pizza.x,STATION_POS.pizza.y-30,'🔥 Burnt!',true,true);
+      if(G.clerk.targetKey==='pizza'){
+        const el=stationEl('pizza');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
       }
     }
-  } else if (p.state === 'ready') {
-    p.readyTimer -= dt;
-    if (p.readyTimer <= 0) {
-      p.state = 'empty';
-      p.cookProgress = 0;
-    }
+  }else if(p.state==='ready'){
+    p.readyTimer-=dt;
+    if(p.readyTimer<=0){p.state='empty';p.cookProgress=0}
   }
 }
 
 // ══════════════════════════════════════════
-// DEGRADATION
+// DEGRADATION & PASSIVE
 // ══════════════════════════════════════════
-function updateDegradation(dt) {
-  const cfg = dayConfig(G.day);
-  const m = cfg.degradeMultiplier;
+function updateDegradation(dt){
+  const m=dayConfig(G.day).degradeMultiplier;
+  const coolerMul=G.upgrades.megaCoolers?0.6:1;
+  G.coolerStock=Math.max(0,G.coolerStock-1.2*m*coolerMul*dt);
+  G.bathroomClean=Math.max(0,G.bathroomClean-0.9*m*dt);
+  G.floorClean=Math.max(0,G.floorClean-0.7*m*dt);
+  G.parkingClean=Math.max(0,G.parkingClean-0.55*m*dt);
 
-  G.coolerStock = Math.max(0, G.coolerStock - 1.2 * m * dt);
-  G.bathroomClean = Math.max(0, G.bathroomClean - 0.9 * m * dt);
-  G.floorClean = Math.max(0, G.floorClean - 0.7 * m * dt);
-  G.parkingClean = Math.max(0, G.parkingClean - 0.55 * m * dt);
+  if(G.bathroomClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.3*m*dt);
+  if(G.floorClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.2*m*dt);
+  if(G.parkingClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.15*m*dt);
+  if(G.coolerStock<15)G.satisfaction=Math.max(0,G.satisfaction-0.15*m*dt);
+}
 
-  if (G.bathroomClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.3 * m * dt);
-  if (G.floorClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.2 * m * dt);
-  if (G.parkingClean < 40) G.satisfaction = Math.max(0, G.satisfaction - 0.15 * m * dt);
-  if (G.coolerStock < 15) G.satisfaction = Math.max(0, G.satisfaction - 0.15 * m * dt);
+function updatePassive(dt){
+  if(!G.upgrades.cbd)return;
+  G.cbdTimer-=dt;
+  if(G.cbdTimer<=0){
+    G.cbdTimer=12;
+    G.dayMoney+=2;G.totalMoney+=2;
+    spawnFloat(400,500,'+$2 🌿',false);
+  }
 }
 
 // ══════════════════════════════════════════
 // MONEY & EFFECTS
 // ══════════════════════════════════════════
-function earnMoney(amount, x, y, pizzaBonus) {
-  G.dayMoney += amount;
-  G.totalMoney += amount;
-  G.dayCustomers++;
-  G.customersServed++;
-  spawnFloat(x, y, '+$' + amount + (pizzaBonus ? ' 🍕' : ''), false, pizzaBonus);
+function earnMoney(amount,x,y,pizzaBonus){
+  G.dayMoney+=amount;G.totalMoney+=amount;G.dayCustomers++;G.customersServed++;
+  spawnFloat(x,y,'+$'+amount+(pizzaBonus?' 🍕':''),false,pizzaBonus);
 }
 
-function spawnFloat(x, y, text, isBad, isPizza) {
-  const el = document.createElement('div');
-  el.className = 'float-text' + (isBad ? ' bad' : '') + (isPizza && !isBad ? ' pizza' : '');
-  el.textContent = text;
-  el.style.left = (x - 30) + 'px';
-  el.style.top = y + 'px';
-  gameArea.appendChild(el);
-  setTimeout(() => el.remove(), 1300);
+function spawnFloat(x,y,text,isBad,isPizza){
+  const el=document.createElement('div');
+  el.className='float-text'+(isBad?' bad':'')+(isPizza&&!isBad?' pizza':'');
+  el.textContent=text;el.style.left=(x-30)+'px';el.style.top=y+'px';
+  gameArea.appendChild(el);setTimeout(()=>el.remove(),1300);
 }
 
 // ══════════════════════════════════════════
-// RENDERING
+// RENDER
 // ══════════════════════════════════════════
-function render() {
-  // HUD
-  $('hud-money').textContent = '$' + G.totalMoney;
-  $('hud-day').textContent = 'Day ' + G.day;
-  const mins = Math.floor(Math.max(0, G.timeLeft) / 60);
-  const secs = Math.floor(Math.max(0, G.timeLeft) % 60);
-  $('hud-time').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-  const timeEl = $('hud-time');
-  timeEl.className = 'hud-val' + (G.timeLeft < 15 ? ' danger' : G.timeLeft < 30 ? ' warn' : '');
+function render(){
+  $('hud-money').textContent='$'+G.totalMoney;
+  $('hud-day').textContent='Day '+G.day;
+  const mins=Math.floor(Math.max(0,G.timeLeft)/60);
+  const secs=Math.floor(Math.max(0,G.timeLeft)%60);
+  $('hud-time').textContent=mins+':'+(secs<10?'0':'')+secs;
+  $('hud-time').className='hud-val'+(G.timeLeft<15?' danger':G.timeLeft<30?' warn':'');
 
-  const satPct = Math.round(G.satisfaction);
-  $('hud-sat').textContent = satPct + '%';
-  $('hud-sat').className = 'hud-val' + (satPct < 30 ? ' danger' : satPct < 60 ? ' warn' : '');
-  $('sat-fill').style.width = satPct + '%';
-  $('sat-fill').style.background = satPct < 30 ? '#fc8181' : satPct < 60 ? '#fbd38d' : '#68d391';
+  const sat=Math.round(G.satisfaction);
+  $('hud-sat').textContent=sat+'%';
+  $('hud-sat').className='hud-val'+(sat<30?' danger':sat<60?' warn':'');
+  $('sat-fill').style.width=sat+'%';
+  $('sat-fill').style.background=sat<30?'#fc8181':sat<60?'#fbd38d':'#68d391';
 
-  const cfg = dayConfig(G.day);
-  $('hud-goal').textContent = '$' + G.dayMoney + '/$' + cfg.goal;
-  $('hud-goal').className = 'hud-val' + (G.dayMoney >= cfg.goal ? '' : G.timeLeft < 30 ? ' warn' : '');
+  const cfg=dayConfig(G.day);
+  $('hud-goal').textContent='$'+G.dayMoney+'/$'+cfg.goal;
+  $('hud-goal').className='hud-val'+(G.dayMoney>=cfg.goal?'':G.timeLeft<30?' warn':'');
 
-  // HUD pizza indicator
-  const pState = G.pizza.state;
-  const pizzaHud = $('hud-pizza');
-  if (pState === 'empty') { pizzaHud.textContent = '—'; pizzaHud.className = 'hud-val'; }
-  else if (pState === 'cooking' && G.pizza.cookProgress < PIZZA_COOK_TIME) {
-    pizzaHud.textContent = 'Baking...'; pizzaHud.className = 'hud-val warn';
-  } else if (pState === 'cooking') {
-    pizzaHud.textContent = 'DONE!'; pizzaHud.className = 'hud-val danger';
-  } else if (pState === 'ready') {
-    pizzaHud.textContent = 'HOT! ' + Math.ceil(G.pizza.readyTimer) + 's'; pizzaHud.className = 'hud-val';
-  } else if (pState === 'burnt') {
-    pizzaHud.textContent = 'BURNT'; pizzaHud.className = 'hud-val danger';
-  }
+  // Pizza HUD
+  const ps=G.pizza.state,ph=$('hud-pizza');
+  if(ps==='empty'){ph.textContent='—';ph.className='hud-val'}
+  else if(ps==='cooking'&&G.pizza.cookProgress<pizzaCookTime()){ph.textContent='Baking...';ph.className='hud-val warn'}
+  else if(ps==='cooking'){ph.textContent='DONE!';ph.className='hud-val danger'}
+  else if(ps==='ready'){ph.textContent='HOT! '+Math.ceil(G.pizza.readyTimer)+'s';ph.className='hud-val'}
+  else if(ps==='burnt'){ph.textContent='BURNT';ph.className='hud-val danger'}
 
   // Pumps
-  G.pumps.forEach((p, i) => {
-    const el = $('pump-' + i);
-    const bar = $('pump-' + i + '-bar');
-    const sub = $('pump-' + i + '-sub');
-    const car = $('car-' + i);
-
-    car.classList.toggle('visible', p.state !== 'empty');
-    car.textContent = p.carType;
-
-    if (p.state === 'empty') {
-      sub.textContent = 'Available';
-      bar.style.width = '0%';
-      bar.className = 'sbar-fill green';
-      el.classList.remove('needs-attention', 'critical');
-    } else if (p.state === 'waiting') {
-      const pct = (p.patience / p.maxPatience) * 100;
-      sub.textContent = '⏳ Waiting...';
-      bar.style.width = pct + '%';
-      bar.className = 'sbar-fill ' + (pct < 30 ? 'red' : pct < 60 ? 'yellow' : 'green');
-      el.classList.toggle('needs-attention', pct >= 30 && pct < 60);
-      el.classList.toggle('critical', pct < 30);
-    } else if (p.state === 'filling') {
-      const pct = (p.fillProgress / 5) * 100;
-      sub.textContent = '⛽ Filling...';
-      bar.style.width = pct + '%';
-      bar.className = 'sbar-fill blue';
-      el.classList.remove('needs-attention', 'critical');
+  G.pumps.forEach((p,i)=>{
+    const el=$('pump-'+i),bar=$('pump-'+i+'-bar'),sub=$('pump-'+i+'-sub'),car=$('car-'+i);
+    car.classList.toggle('visible',p.state!=='empty');car.textContent=p.carType;
+    if(p.state==='empty'){
+      sub.textContent='Available';bar.style.width='0%';bar.className='sbar-fill green';
+      el.classList.remove('needs-attention','critical');
+    }else if(p.state==='waiting'){
+      const pct=(p.patience/p.maxPatience)*100;sub.textContent='⏳ Waiting';
+      bar.style.width=pct+'%';bar.className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+      el.classList.toggle('needs-attention',pct>=30&&pct<60);el.classList.toggle('critical',pct<30);
+    }else if(p.state==='filling'){
+      const pct=(p.fillProgress/pumpFillTime())*100;sub.textContent='⛽ Filling';
+      bar.style.width=pct+'%';bar.className='sbar-fill blue';
+      el.classList.remove('needs-attention','critical');
     }
   });
 
   // Coolers
-  renderCleanStation('cooler', G.coolerStock, 'Stocked', 'Low Stock!', 'Empty!');
-  $('cooler-bar').className = 'sbar-fill ' + (G.coolerStock < 20 ? 'red' : G.coolerStock < 50 ? 'yellow' : 'blue');
+  renderClean('cooler',G.coolerStock,'Stocked','Low Stock!','Empty!');
+  $('cooler-bar').className='sbar-fill '+(G.coolerStock<20?'red':G.coolerStock<50?'yellow':'blue');
 
   // Counter
-  const counterEl = $('counter-station');
-  if (G.counterQueue > 0) {
-    const pizzaTag = G.pizza.state === 'ready' ? ' 🍕' : '';
-    $('counter-sub').textContent = '👤 x' + G.counterQueue + pizzaTag;
-    const pct = (G.counterPatience / G.counterMaxPatience) * 100;
-    $('counter-bar').style.width = pct + '%';
-    $('counter-bar').className = 'sbar-fill ' + (pct < 30 ? 'red' : pct < 60 ? 'yellow' : 'green');
-    counterEl.classList.toggle('needs-attention', pct >= 30);
-    counterEl.classList.toggle('critical', pct < 30);
-  } else {
-    $('counter-sub').textContent = 'No customers';
-    $('counter-bar').style.width = '0%';
-    counterEl.classList.remove('needs-attention', 'critical');
-  }
+  const cEl=$('counter-station');
+  if(G.counterQueue>0){
+    const bonusTags=(G.pizza.state==='ready'?' 🍕':'')+(G.upgrades.beerVapes?' 🍺':'');
+    $('counter-sub').textContent='👤 x'+G.counterQueue+bonusTags;
+    const pct=(G.counterPatience/G.counterMaxPatience)*100;
+    $('counter-bar').style.width=pct+'%';
+    $('counter-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+    cEl.classList.toggle('needs-attention',pct>=30);cEl.classList.toggle('critical',pct<30);
+  }else{$('counter-sub').textContent='No customers';$('counter-bar').style.width='0%';cEl.classList.remove('needs-attention','critical')}
 
-  // Pizza oven
-  renderPizzaStation();
+  // Drive-thru
+  const dtEl=$('drivethru-station'),dtCar=$('dt-car');
+  dtCar.classList.toggle('visible',G.driveThru.queue>0);dtCar.textContent=G.driveThru.carType;
+  if(G.driveThru.queue>0){
+    $('drivethru-sub').textContent='🚘 x'+G.driveThru.queue;
+    const pct=(G.driveThru.patience/G.driveThru.maxPatience)*100;
+    $('drivethru-bar').style.width=pct+'%';
+    $('drivethru-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+    dtEl.classList.toggle('needs-attention',pct>=30);dtEl.classList.toggle('critical',pct<30);
+  }else{$('drivethru-sub').textContent='No orders';$('drivethru-bar').style.width='0%';dtEl.classList.remove('needs-attention','critical')}
 
-  // Cleaning stations
-  renderCleanStation('bathroom', G.bathroomClean, 'Clean', 'Needs Cleaning', 'Filthy!');
-  renderCleanStation('floor', G.floorClean, 'Clean', 'Needs Mopping', 'Filthy!');
-  renderCleanStation('parking', G.parkingClean, 'Clean', 'Needs Sweeping', 'Littered!');
+  // Pizza
+  renderPizza();
 
-  // Clerk position
-  const clerk = $('clerk');
-  clerk.style.left = (G.clerk.x - 15) + 'px';
-  clerk.style.top = (G.clerk.y - 15) + 'px';
+  // Cleaning
+  renderClean('bathroom',G.bathroomClean,'Clean','Needs Cleaning','Filthy!');
+  renderClean('floor',G.floorClean,'Clean','Needs Mopping','Filthy!');
+  renderClean('parking',G.parkingClean,'Clean','Needs Sweeping','Littered!');
 
-  // Clerk label
-  const clerkLabel = $('clerk-label');
-  clerkLabel.style.left = (G.clerk.x - 30) + 'px';
-  clerkLabel.style.top = (G.clerk.y - 32) + 'px';
-  if (G.clerk.targetKey) {
-    clerkLabel.classList.add('visible');
-    clerkLabel.textContent = G.clerk.arrived ? 'Working...' : 'Going →';
-  } else {
-    clerkLabel.classList.remove('visible');
-  }
+  // Clerk
+  const clerk=$('clerk');
+  clerk.style.left=(G.clerk.x-14)+'px';clerk.style.top=(G.clerk.y-14)+'px';
+  const cl=$('clerk-label');
+  cl.style.left=(G.clerk.x-28)+'px';cl.style.top=(G.clerk.y-30)+'px';
+  if(G.clerk.targetKey){cl.classList.add('visible');cl.textContent=G.clerk.arrived?'Working...':'Going →'}
+  else cl.classList.remove('visible');
 
-  // Clerk progress ring
-  const progRing = $('prog-ring');
-  const clerkProg = $('clerk-progress');
-  clerkProg.style.left = (G.clerk.x - 18) + 'px';
-  clerkProg.style.top = (G.clerk.y - 18) + 'px';
-  if (G.clerk.arrived && G.clerk.targetKey && G.clerk.taskDuration > 0) {
-    const pct = G.clerk.taskProgress / G.clerk.taskDuration;
-    progRing.setAttribute('stroke-dashoffset', 94.25 * (1 - pct));
-    clerkProg.style.opacity = '1';
-  } else {
-    clerkProg.style.opacity = '0';
-  }
+  const pr=$('prog-ring'),cp=$('clerk-progress');
+  cp.style.left=(G.clerk.x-18)+'px';cp.style.top=(G.clerk.y-18)+'px';
+  if(G.clerk.arrived&&G.clerk.targetKey&&G.clerk.taskDuration>0){
+    pr.setAttribute('stroke-dashoffset',94.25*(1-G.clerk.taskProgress/G.clerk.taskDuration));cp.style.opacity='1';
+  }else cp.style.opacity='0';
 }
 
-function renderPizzaStation() {
-  const el = $('pizza-station');
-  const bar = $('pizza-bar');
-  const sub = $('pizza-sub');
-  const p = G.pizza;
-
-  // Clear special classes
-  el.classList.remove('pizza-ready', 'pizza-done', 'needs-attention', 'critical');
-
-  if (p.state === 'empty') {
-    sub.textContent = 'No Pizza';
-    bar.style.width = '0%';
-    bar.className = 'sbar-fill orange';
-  } else if (p.state === 'cooking') {
-    if (p.cookProgress < PIZZA_COOK_TIME) {
-      // Still cooking
-      const pct = (p.cookProgress / PIZZA_COOK_TIME) * 100;
-      sub.textContent = '🔥 Cooking...';
-      bar.style.width = pct + '%';
-      bar.className = 'sbar-fill orange';
-    } else {
-      // Done! Needs to be pulled out before it burns
-      const graceLeft = PIZZA_GRACE - (p.cookProgress - PIZZA_COOK_TIME);
-      const gracePct = (graceLeft / PIZZA_GRACE) * 100;
-      sub.textContent = '✅ TAKE IT OUT!';
-      bar.style.width = '100%';
-      bar.className = 'sbar-fill ' + (gracePct < 35 ? 'red' : 'green');
-      if (gracePct < 35) {
-        el.classList.add('critical');
-      } else {
-        el.classList.add('pizza-done');
-      }
+function renderPizza(){
+  const el=$('pizza-station'),bar=$('pizza-bar'),sub=$('pizza-sub'),p=G.pizza;
+  el.classList.remove('pizza-ready','pizza-done','needs-attention','critical');
+  if(p.state==='empty'){sub.textContent='No Pizza';bar.style.width='0%';bar.className='sbar-fill orange'}
+  else if(p.state==='cooking'){
+    const ct=pizzaCookTime();
+    if(p.cookProgress<ct){
+      sub.textContent='🔥 Cooking...';bar.style.width=(p.cookProgress/ct*100)+'%';bar.className='sbar-fill orange';
+    }else{
+      const grace=PIZZA_GRACE-(p.cookProgress-ct);
+      sub.textContent='✅ TAKE IT OUT!';bar.style.width='100%';
+      bar.className='sbar-fill '+(grace/PIZZA_GRACE<.35?'red':'green');
+      el.classList.add(grace/PIZZA_GRACE<.35?'critical':'pizza-done');
     }
-  } else if (p.state === 'ready') {
-    const pct = (p.readyTimer / PIZZA_READY_TIME) * 100;
-    sub.textContent = '🍕 HOT & READY!';
-    bar.style.width = pct + '%';
-    bar.className = 'sbar-fill green';
-    el.classList.add('pizza-ready');
-  } else if (p.state === 'burnt') {
-    sub.textContent = '💨 Burnt! Clean it!';
-    bar.style.width = '100%';
-    bar.className = 'sbar-fill red';
-    el.classList.add('critical');
+  }else if(p.state==='ready'){
+    sub.textContent='🍕 HOT & READY!';bar.style.width=(p.readyTimer/PIZZA_READY_TIME*100)+'%';
+    bar.className='sbar-fill green';el.classList.add('pizza-ready');
+  }else if(p.state==='burnt'){
+    sub.textContent='💨 Burnt! Clean it!';bar.style.width='100%';bar.className='sbar-fill red';el.classList.add('critical');
   }
 }
 
-function renderCleanStation(key, value, goodText, warnText, badText) {
-  const el = $(key + '-station');
-  const bar = $(key + '-bar');
-  const sub = $(key + '-sub');
-  bar.style.width = value + '%';
-  if (value > 60) {
-    sub.textContent = goodText;
-    bar.className = 'sbar-fill green';
-    el.classList.remove('needs-attention', 'critical');
-  } else if (value > 25) {
-    sub.textContent = warnText;
-    bar.className = 'sbar-fill yellow';
-    el.classList.add('needs-attention');
-    el.classList.remove('critical');
-  } else {
-    sub.textContent = badText;
-    bar.className = 'sbar-fill red';
-    el.classList.remove('needs-attention');
-    el.classList.add('critical');
-  }
+function renderClean(key,val,good,warn,bad){
+  const el=$(key+'-station'),bar=$(key+'-bar'),sub=$(key+'-sub');
+  bar.style.width=val+'%';
+  if(val>60){sub.textContent=good;bar.className='sbar-fill green';el.classList.remove('needs-attention','critical')}
+  else if(val>25){sub.textContent=warn;bar.className='sbar-fill yellow';el.classList.add('needs-attention');el.classList.remove('critical')}
+  else{sub.textContent=bad;bar.className='sbar-fill red';el.classList.remove('needs-attention');el.classList.add('critical')}
 }
 
 // ══════════════════════════════════════════
 // GAME LOOP
 // ══════════════════════════════════════════
-let lastTime = 0;
-
-function gameLoop(timestamp) {
+let lastTime=0;
+function gameLoop(ts){
   requestAnimationFrame(gameLoop);
-  if (!lastTime) { lastTime = timestamp; return; }
-  const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
-  lastTime = timestamp;
+  if(!lastTime){lastTime=ts;return}
+  const dt=Math.min((ts-lastTime)/1000,0.1);lastTime=ts;
+  if(G.screen!=='playing'||G.paused)return;
 
-  if (G.screen !== 'playing' || G.paused) return;
+  G.timeLeft-=dt;
+  if(G.timeLeft<=0){G.timeLeft=0;endDay();return}
+  if(G.satisfaction<=0){G.satisfaction=0;gameOver('The health inspector shut you down! Satisfaction hit 0%.');return}
 
-  G.timeLeft -= dt;
-  if (G.timeLeft <= 0) {
-    G.timeLeft = 0;
-    endDay();
-    return;
-  }
-
-  if (G.satisfaction <= 0) {
-    G.satisfaction = 0;
-    gameOver('The health inspector shut you down! Satisfaction hit 0%.');
-    return;
-  }
-
-  updateCustomers(dt);
-  updatePizza(dt);
-  updateDegradation(dt);
-  updateClerk(dt);
+  updateCustomers(dt);updatePizza(dt);updateDegradation(dt);updatePassive(dt);updateClerk(dt);
   render();
 }
-
-// ══════════════════════════════════════════
-// UTILITIES
-// ══════════════════════════════════════════
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function randFloat(min, max) { return Math.random() * (max - min) + min; }
 
 // ══════════════════════════════════════════
 // START
