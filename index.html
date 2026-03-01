@@ -508,7 +508,7 @@ function endDay(){
     'Satisfaction: <span>'+Math.round(G.satisfaction)+'%</span> &nbsp; Bank: <span>$'+G.totalMoney+'</span>';
 
   $('dayend-btn').textContent=metGoal?'Start Day '+(G.day+1)+' →':'Retry Day '+G.day;
-  $('dayend-btn').onclick=metGoal?window.nextDay:function(){G.day--;window.nextDay()};
+  $('dayend-btn').onclick=metGoal?window.nextDay:function(){G.totalMoney-=G.dayMoney+tips;G.dayStars.pop();G.day--;window.nextDay()};
 
   renderShop();
   G.screen='dayend';hideAll();showScr('dayend-screen');
@@ -584,7 +584,7 @@ function assignClerk(key){
 
 function canDoTask(key){
   if(key.startsWith('pump')){const i=+key.replace('pump','');return G.pumps[i].state==='waiting'}
-  if(key==='counter')return G.counterQueue>0;
+  if(key==='counter')return G.counterQueue>0&&G.coolerStock>0;
   if(key==='drivethru')return G.driveThru.queue>0;
   if(key==='coolers')return G.coolerStock<90;
   if(key==='bathroom')return G.bathroomClean<90;
@@ -638,6 +638,8 @@ function completeTask(){
       let pay=randInt(3,9)+saleBonus();
       if(G.pizza.state==='ready')pay+=PIZZA_COUNTER_BONUS;
       earnMoney(pay,pos.x,pos.y-30,G.pizza.state==='ready');
+    }else if(G.counterQueue>0&&G.coolerStock<=0){
+      spawnFloat(pos.x,pos.y-30,'Coolers empty!',true);
     }
   }else if(key==='drivethru'){
     if(G.driveThru.queue>0){
@@ -887,7 +889,7 @@ function render(){
     const pct=(G.counterPatience/G.counterMaxPatience)*100;
     $('counter-bar').style.width=pct+'%';
     $('counter-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
-    cEl.classList.toggle('needs-attention',pct>=30);cEl.classList.toggle('critical',pct<30);
+    cEl.classList.toggle('needs-attention',pct>=30&&pct<60);cEl.classList.toggle('critical',pct<30);
   }else{$('counter-sub').textContent='No customers';$('counter-bar').style.width='0%';cEl.classList.remove('needs-attention','critical')}
 
   // Drive-thru
@@ -898,7 +900,7 @@ function render(){
     const pct=(G.driveThru.patience/G.driveThru.maxPatience)*100;
     $('drivethru-bar').style.width=pct+'%';
     $('drivethru-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
-    dtEl.classList.toggle('needs-attention',pct>=30);dtEl.classList.toggle('critical',pct<30);
+    dtEl.classList.toggle('needs-attention',pct>=30&&pct<60);dtEl.classList.toggle('critical',pct<30);
   }else{$('drivethru-sub').textContent='No orders';$('drivethru-bar').style.width='0%';dtEl.classList.remove('needs-attention','critical')}
 
   // Pizza
