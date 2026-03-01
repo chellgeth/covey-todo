@@ -2,493 +2,981 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>First Things First - Covey Quadrant To-Do</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Patel's Corner — Gas Station Sim</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --color-900: #023E8A; --color-900-dark: #01337a;
-  --color-700: #0077B6; --color-600: #0096C7;
-  --color-500: #00B4D8; --color-400: #48CAE4;
-  --color-300: #90E0EF; --color-100: #CAF0F8;
-  --color-50: #f0fafe; --color-hover: #e0f7fc;
-  --color-white: #fff;
-  --bg-page: var(--color-100); --bg-card: var(--color-white);
-  --bg-input: var(--color-50); --bg-hover: var(--color-hover);
-  --text-primary: var(--color-900); --text-accent: var(--color-700);
-  --text-muted: rgba(0,119,182,0.6); --border-light: var(--color-300);
-  --border-focus: var(--color-700); --shadow-base: rgba(2,62,138,0.05);
-  --shadow-hover: rgba(2,62,138,0.07); --focus-ring: rgba(0,119,182,0.12);
-}
-body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; }
-#sync-status { position: fixed; bottom: 16px; right: 16px; background: var(--color-900); color: var(--color-white); padding: 8px 16px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; opacity: 0; transition: opacity 0.4s ease; z-index: 999; pointer-events: none; }
-#sync-status.show { opacity: 1; }
-header { background: linear-gradient(135deg,var(--color-900) 0%,var(--color-700) 100%); color: var(--color-white); padding: 28px 32px 24px; text-align: center; position: relative; overflow: hidden; }
-header::before { content:''; position: absolute; top:-50%; left:-10%; width:120%; height:200%; background: radial-gradient(ellipse at 30% 50%,rgba(144,224,239,.15) 0%,transparent 60%), radial-gradient(ellipse at 70% 50%,rgba(202,240,248,.1) 0%,transparent 60%); pointer-events: none; }
-header h1 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.3px; position: relative; }
-header p { font-size: 0.82rem; font-weight: 400; opacity: 0.5; margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; position: relative; }
-.input-bar { background: var(--bg-card); padding: 14px 28px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(2,62,138,.04),0 4px 12px rgba(2,62,138,.03); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-light); }
-.input-bar input[type="text"] { flex: 1 1 280px; padding: 11px 16px; font-family: inherit; font-size: 0.92rem; border: 1.5px solid var(--border-light); border-radius: 10px; outline: none; background: var(--bg-input); transition: all .25s ease; color: var(--text-primary); }
-.input-bar input[type="text"]::placeholder { color: var(--text-muted); }
-.input-bar input[type="text"]:focus { border-color: var(--border-focus); background: var(--bg-card); box-shadow: 0 0 0 3px var(--focus-ring); }
-.toggle-group { display: flex; gap: 8px; }
-.toggle-btn { padding: 9px 20px; border: 1.5px solid var(--border-light); border-radius: 24px; background: var(--bg-input); font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .25s ease; user-select: none; color: var(--text-accent); letter-spacing: .2px; }
-.toggle-btn:hover { border-color: var(--border-focus); background: var(--bg-hover); }
-.toggle-btn.active-urgent { background: linear-gradient(135deg,var(--color-900),var(--color-900-dark)); color: var(--color-white); border-color: transparent; box-shadow: 0 2px 8px rgba(2,62,138,.35); }
-.toggle-btn.active-important { background: linear-gradient(135deg,var(--color-700),var(--color-600)); color: var(--color-white); border-color: transparent; box-shadow: 0 2px 8px rgba(0,119,182,.35); }
-.attach-btn-bar { padding: 9px 14px; border: 1.5px solid var(--border-light); border-radius: 10px; background: var(--bg-input); font-family: inherit; font-size: 0.88rem; cursor: pointer; transition: all .25s ease; color: var(--text-accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0; }
-.attach-btn-bar:hover { border-color: var(--border-focus); background: var(--bg-hover); }
-.attach-btn-bar.has-files { border-color: var(--color-700); background: rgba(0,119,182,0.08); color: var(--color-700); font-weight: 600; }
-.add-btn { padding: 11px 28px; background: linear-gradient(135deg,var(--color-900),var(--color-700)); color: var(--color-white); border: none; border-radius: 10px; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all .25s ease; letter-spacing: .2px; }
-.add-btn:hover { background: linear-gradient(135deg,var(--color-700),var(--color-600)); box-shadow: 0 4px 12px rgba(2,62,138,.25); transform: translateY(-1px); }
-.add-btn:active { transform: translateY(0); }
-.quadrant-grid { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 20px 24px; max-width: 700px; margin: 0 auto; }
-.quadrant { background: var(--bg-card); border-radius: 14px; min-height: 230px; box-shadow: 0 1px 3px rgba(2,62,138,.05),0 4px 16px rgba(2,62,138,.04); display: flex; flex-direction: column; overflow: hidden; transition: box-shadow .3s ease; border: 1px solid rgba(0,119,182,.08); }
-.quadrant:hover { box-shadow: 0 2px 6px rgba(2,62,138,.07),0 8px 24px rgba(2,62,138,.06); }
-.quadrant-header { padding: 14px 18px; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .8px; display: flex; justify-content: space-between; align-items: flex-start; }
-.quadrant-header .header-left { display: flex; flex-direction: column; gap: 3px; }
-.quadrant-header .header-subtitle { font-size: 0.68rem; font-weight: 400; text-transform: none; letter-spacing: .1px; opacity: .8; line-height: 1.35; }
-.quadrant-header .count { background: rgba(255,255,255,.25); padding: 3px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px); flex-shrink: 0; margin-top: 1px; }
-.quadrant-body { padding: 10px 14px 14px; flex: 1; overflow-y: auto; }
-.q1 .quadrant-header { background: linear-gradient(135deg,var(--color-900),var(--color-900-dark)); color: var(--color-white); }
-.q2 .quadrant-header { background: linear-gradient(135deg,var(--color-700),var(--color-600)); color: var(--color-white); }
-.q3 .quadrant-header { background: linear-gradient(135deg,var(--color-600),var(--color-500)); color: var(--color-white); }
-.q4 .quadrant-header { background: linear-gradient(135deg,var(--color-400),var(--color-300)); color: var(--text-primary); }
-.extra-sections { max-width: 700px; margin: 0 auto; padding: 0 24px 40px; display: grid; grid-template-columns: 1fr; gap: 18px; }
-.section { background: var(--bg-card); border-radius: 14px; min-height: 120px; box-shadow: 0 1px 3px rgba(2,62,138,.05),0 4px 16px rgba(2,62,138,.04); display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,119,182,.08); transition: box-shadow .3s ease; }
-.section:hover { box-shadow: 0 2px 6px rgba(2,62,138,.07),0 8px 24px rgba(2,62,138,.06); }
-.monitor .quadrant-header { background: linear-gradient(135deg,var(--color-700),var(--color-900)); color: var(--color-white); }
-.completed .quadrant-header { background: linear-gradient(135deg,var(--color-400),var(--color-300)); color: var(--text-primary); }
-.task-item-wrapper { margin-bottom: 8px; }
-.task-item-wrapper .task-item { margin-bottom: 0; }
-.task-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-input); border-radius: 10px; border-left: 3px solid transparent; transition: all .2s ease; animation: fadeIn .3s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-.task-item:hover { background: var(--bg-hover); transform: translateX(2px); }
-.q1 .task-item { border-left-color: var(--color-900); }
-.q2 .task-item { border-left-color: var(--color-700); }
-.q3 .task-item { border-left-color: var(--color-500); }
-.q4 .task-item { border-left-color: var(--color-300); }
-.monitor .task-item { border-left-color: var(--color-700); }
-.completed .task-item { border-left-color: var(--color-400); opacity: .6; }
-.completed .task-item .task-text { text-decoration: line-through; color: var(--color-300); }
-.task-text { flex: 1; font-size: 0.88rem; font-weight: 450; line-height: 1.45; word-break: break-word; color: var(--text-primary); }
-.task-date { font-size: 0.68rem; font-weight: 500; color: var(--text-muted); white-space: nowrap; letter-spacing: .2px; }
-.task-select { padding: 5px 8px; font-family: inherit; font-size: 0.74rem; font-weight: 500; border: 1.5px solid var(--border-light); border-radius: 8px; background: var(--bg-card); color: var(--text-accent); cursor: pointer; flex-shrink: 0; transition: all .2s ease; outline: none; }
-.task-select:hover { border-color: var(--border-focus); }
-.task-select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--focus-ring); }
-.task-delete { background: none; border: none; color: var(--color-300); cursor: pointer; font-size: 1.15rem; padding: 2px 6px; border-radius: 6px; transition: all .2s ease; flex-shrink: 0; line-height: 1; }
-.task-delete:hover { color: var(--text-primary); background: rgba(2,62,138,.08); }
-.task-attachments { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; padding-left: 2px; }
-.attachment-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 6px; font-size: 0.72rem; font-weight: 500; color: var(--text-accent); max-width: 180px; cursor: pointer; transition: all .2s ease; }
-.attachment-chip:hover { border-color: var(--border-focus); background: var(--bg-hover); }
-.attachment-chip .att-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.attachment-chip .att-remove { background: none; border: none; color: var(--color-300); cursor: pointer; font-size: .85rem; line-height: 1; padding: 0 1px; flex-shrink: 0; }
-.attachment-chip .att-remove:hover { color: var(--text-primary); }
-.toolbar { max-width: 700px; margin: 0 auto; padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
-.toolbar button { padding: 8px 18px; font-family: inherit; font-size: 0.78rem; font-weight: 600; border: 1.5px solid var(--border-light); border-radius: 8px; background: var(--bg-card); color: var(--text-accent); cursor: pointer; transition: all .2s ease; letter-spacing: .2px; }
-.toolbar button:hover { background: var(--bg-hover); border-color: var(--border-focus); color: var(--text-primary); }
-.grid-wrapper { max-width: 700px; margin: 0 auto; padding: 0; }
-.empty-msg { text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 24px 16px; font-weight: 500; line-height: 1.6; }
-.empty-msg .empty-title { display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-300); font-size: 0.82rem; }
-.empty-msg .empty-examples { font-size: 0.73rem; font-weight: 400; font-style: italic; opacity: .8; }
-@media print {
-  body { background: #fff; }
-  .input-bar, .toolbar, .task-select, .task-delete, .attachment-chip .att-remove, #sync-status { display: none !important; }
-  header { background: var(--color-900) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 16px 24px; }
-  header h1 { font-size: 1.3rem; }
-  header p { font-size: 0.7rem; }
-  .grid-wrapper, .extra-sections { max-width: 100%; padding: 10px 16px; }
-  .quadrant-grid { gap: 12px; padding: 10px 0; max-width: 100%; }
-  .quadrant { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-  .quadrant-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 8px 14px; font-size: 0.72rem; }
-  .quadrant-header .header-subtitle { font-size: 0.6rem; }
-  .quadrant-body { padding: 8px 10px; }
-  .task-item { padding: 6px 8px; margin-bottom: 4px; background: #f8f8f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .task-text { font-size: 0.8rem; }
-  .task-date { font-size: 0.65rem; }
-  .section { min-height: auto; break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-  .extra-sections { padding-bottom: 10px; }
-  .empty-msg { padding: 12px 0; font-size: 0.75rem; }
-  .attachment-chip { font-size: 0.65rem; padding: 2px 6px; }
-  .print-report-date { display: block !important; text-align: center; font-size: 0.75rem; color: #666; padding: 6px 0 0; }
-}
-.print-report-date { display: none; }
-@media (max-width: 700px) {
-  .input-bar { flex-direction: column; align-items: stretch; }
-  .input-bar input[type="text"] { flex: none; }
-  .toggle-group { justify-content: center; }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1520;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;overflow-x:hidden;padding-top:10px;color:#e2e8f0}
+#game-wrapper{width:800px;transform-origin:top center;position:relative}
+
+/* HUD */
+#hud{background:linear-gradient(135deg,#1e1a2e,#221e33);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-radius:12px 12px 0 0;border:2px solid #3a2a5c;border-bottom:none;gap:6px;flex-wrap:wrap}
+.hud-item{display:flex;align-items:center;gap:4px;font-size:.82rem;font-weight:600;white-space:nowrap}
+.hud-icon{font-size:.95rem}
+.hud-val{color:#68d391;font-variant-numeric:tabular-nums}
+.hud-val.warn{color:#fbd38d}
+.hud-val.danger{color:#fc8181}
+#sat-bar{width:70px;height:6px;background:#2d2840;border-radius:4px;overflow:hidden}
+#sat-fill{height:100%;background:#68d391;border-radius:4px;transition:width .3s,background .3s}
+
+/* Game Area */
+#game-area{width:800px;height:550px;background:#5a6577;position:relative;overflow:hidden;border:2px solid #3a2a5c;border-top:none;border-radius:0 0 12px 12px;cursor:default;user-select:none}
+.road{position:absolute;top:0;left:0;width:100%;height:42px;background:#3a4255;border-bottom:3px solid #d4a017}
+.road-dash{position:absolute;top:18px;height:3px;width:28px;background:#d4a017;border-radius:2px}
+
+/* Canopy */
+.canopy{position:absolute;top:44px;left:25px;right:25px;height:125px;background:linear-gradient(135deg,#b8860b,#d4a017);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.canopy-title{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:.7rem;font-weight:800;color:rgba(255,255,255,.35);letter-spacing:4px;text-transform:uppercase;white-space:nowrap}
+
+/* Station shared */
+.station{position:absolute;border-radius:10px;cursor:pointer;transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:2}
+.station:hover{transform:scale(1.04);z-index:5}
+.station.active{box-shadow:0 0 0 3px #9f7aea,0 0 16px rgba(159,122,234,.4) !important}
+.station.needs-attention{animation:pulseWarn 1s infinite}
+.station.critical{animation:pulseCrit .6s infinite}
+@keyframes pulseWarn{0%,100%{box-shadow:0 0 0 2px #ecc94b}50%{box-shadow:0 0 0 4px #ecc94b,0 0 12px rgba(236,201,75,.4)}}
+@keyframes pulseCrit{0%,100%{box-shadow:0 0 0 2px #fc8181}50%{box-shadow:0 0 0 5px #fc8181,0 0 16px rgba(252,129,129,.5)}}
+.station-icon{font-size:1.5rem;line-height:1;pointer-events:none}
+.station-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.85);pointer-events:none}
+.station-sub{font-size:.7rem;pointer-events:none;min-height:1em}
+.sbar{width:80%;height:5px;background:rgba(0,0,0,.25);border-radius:3px;overflow:hidden;margin-top:1px;pointer-events:none}
+.sbar-fill{height:100%;border-radius:3px;transition:width .3s}
+.sbar-fill.green{background:#68d391}.sbar-fill.yellow{background:#ecc94b}.sbar-fill.red{background:#fc8181}
+.sbar-fill.blue{background:#63b3ed}.sbar-fill.orange{background:#ed8936}
+
+/* Pumps */
+.pump-station{width:145px;height:95px;background:linear-gradient(135deg,#2d3748,#3a4556);border:2px solid #4a5568}
+.pump-station .car-slot{font-size:1.3rem;position:absolute;bottom:1px;left:50%;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .3s}
+.pump-station .car-slot.visible{opacity:1}
+
+/* Area backgrounds */
+.area-bg{position:absolute;border-radius:10px;z-index:0}
+#parking-bg{top:190px;left:25px;width:235px;height:115px;background:linear-gradient(135deg,#6b7a8d,#7a8899);border:2px dashed #8a99aa}
+#drivethru-bg{top:190px;left:275px;width:220px;height:115px;background:linear-gradient(180deg,#4a5058,#555d65);border:2px solid #707a84}
+#bathroom-bg{top:190px;left:510px;width:265px;height:115px;background:linear-gradient(135deg,#5a6b7d,#6a7b8d);border:2px solid #7a8b9d}
+#store-bg{top:325px;left:25px;width:750px;height:175px;background:linear-gradient(135deg,#edf2f7,#e2e8f0);border:2px solid #cbd5e0;box-shadow:inset 0 2px 8px rgba(0,0,0,.05)}
+#store-label{position:absolute;top:330px;left:50%;transform:translateX(-50%);font-size:.5rem;font-weight:800;color:rgba(0,0,0,.12);letter-spacing:4px;text-transform:uppercase;z-index:1}
+
+/* Middle stations */
+.mid-station{width:145px;height:80px;border:2px solid rgba(255,255,255,.15)}
+#parking-station{background:linear-gradient(135deg,#5a6a7d,#6a7a8d);top:205px;left:70px}
+#drivethru-station{background:linear-gradient(135deg,#4a5060,#5a6070);top:205px;left:312px;border-color:#707a84}
+#drivethru-station .car-slot{font-size:1.1rem;position:absolute;bottom:1px;right:4px;pointer-events:none;opacity:0;transition:opacity .3s}
+#drivethru-station .car-slot.visible{opacity:1}
+#bathroom-station{background:linear-gradient(135deg,#4a5b6d,#5a6b7d);top:205px;left:570px}
+
+/* Store stations */
+.store-station{width:165px;height:120px;border:2px solid #a0aec0}
+#counter-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:35px;color:#2d3748}
+#counter-station .station-label{color:#4a5568}
+#pizza-station{background:linear-gradient(135deg,#fffaf0,#feebc8);top:345px;left:215px;color:#2d3748}
+#pizza-station .station-label{color:#c05621}
+#pizza-station.pizza-ready{animation:warmGlow 1.5s ease-in-out infinite !important}
+#pizza-station.pizza-done{animation:pizzaDone .7s infinite !important}
+@keyframes warmGlow{0%,100%{box-shadow:0 0 8px rgba(237,137,54,.3),inset 0 0 12px rgba(237,137,54,.08)}50%{box-shadow:0 0 22px rgba(237,137,54,.55),0 0 35px rgba(237,137,54,.2),inset 0 0 16px rgba(237,137,54,.12)}}
+@keyframes pizzaDone{0%,100%{box-shadow:0 0 6px rgba(72,187,120,.4)}50%{box-shadow:0 0 14px rgba(72,187,120,.7),0 0 24px rgba(237,137,54,.3)}}
+#cooler-station{background:linear-gradient(135deg,#ebf8ff,#e6fffa);top:345px;left:395px;color:#2d3748}
+#cooler-station .station-label{color:#2b6cb0}
+#floor-station{background:linear-gradient(135deg,#fff,#f7fafc);top:345px;left:575px;color:#2d3748}
+#floor-station .station-label{color:#4a5568}
+.store-station .station-sub{color:#718096}
+
+/* Clerk */
+#clerk{position:absolute;z-index:10;font-size:1.7rem;transition:none;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+#clerk-label{position:absolute;z-index:11;font-size:.52rem;font-weight:700;color:#fff;background:#805ad5;padding:1px 6px;border-radius:8px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
+#clerk-label.visible{opacity:1}
+#clerk-progress{position:absolute;z-index:12;pointer-events:none}
+
+/* Float text */
+.float-text{position:absolute;font-weight:800;font-size:.9rem;color:#68d391;z-index:20;pointer-events:none;animation:floatUp 1.2s ease-out forwards}
+.float-text.bad{color:#fc8181}.float-text.pizza{color:#ed8936}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+
+/* Screens */
+.screen-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:18px 20px;overflow-y:auto}
+.screen-overlay.show{display:flex}
+#title-screen{background:linear-gradient(135deg,rgba(26,21,32,.97),rgba(30,26,46,.97));justify-content:center}
+#dayend-screen{background:rgba(22,28,42,.96)}
+#gameover-screen{background:rgba(30,10,10,.96);justify-content:center}
+.screen-title{font-size:2rem;font-weight:800;margin-bottom:2px}
+.screen-sub{font-size:.85rem;color:#a0aec0;margin-bottom:12px;max-width:420px;line-height:1.5}
+.screen-stats{margin:4px 0 8px;font-size:.85rem;line-height:1.9}
+.screen-stats span{color:#68d391;font-weight:700}
+.screen-stats .pizza-stat{color:#ed8936}
+.dayend-stars{font-size:1.5rem;margin:4px 0}
+.btn{padding:10px 32px;font-family:inherit;font-size:.95rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .2s;letter-spacing:.5px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,#68d391,#48bb78);color:#1a202c}
+.btn-danger{background:linear-gradient(135deg,#fc8181,#f56565);color:#fff}
+.btn-secondary{background:linear-gradient(135deg,#a0aec0,#718096);color:#fff;margin-top:6px;padding:7px 20px;font-size:.8rem}
+.instructions{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 18px;margin:10px 0;font-size:.74rem;color:#a0aec0;line-height:1.6;text-align:left;max-width:440px}
+.instructions b{color:#e2e8f0}
+.high-score{font-size:.72rem;color:#a0aec0;margin-top:8px}
+.high-score span{color:#fbd38d;font-weight:700}
+
+/* Upgrade Shop */
+.shop-section{width:100%;max-width:480px;margin:6px 0 10px}
+.shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.shop-title{font-size:.85rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.shop-balance{font-size:.8rem;color:#68d391;font-weight:700}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.shop-item{background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.06)}
+.shop-item.owned{opacity:.5}
+.shop-icon{font-size:1.2rem;flex-shrink:0}
+.shop-info{flex:1;text-align:left}
+.shop-name{font-size:.72rem;font-weight:700;color:#e2e8f0}
+.shop-desc{font-size:.58rem;color:#a0aec0}
+.shop-btn{padding:4px 10px;border:none;border-radius:6px;font-family:inherit;font-size:.65rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:transform .1s}
+.shop-btn.buy{background:#48bb78;color:#1a202c}.shop-btn.buy:hover{transform:scale(1.05)}
+.shop-btn.owned-btn{background:#4a5568;color:#a0aec0;cursor:default}
+.shop-btn.locked{background:#2d2840;color:#718096;cursor:default}
+.shop-btn.poor{background:#2d2840;color:#fc8181;cursor:not-allowed;opacity:.7}
+
+/* Day banner */
+#day-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;font-size:2.3rem;font-weight:800;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;pointer-events:none}
+#day-banner.show{animation:bannerPop 2s ease-out forwards}
+@keyframes bannerPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}30%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+
+@media(max-width:830px){body{padding-top:0;align-items:flex-start}}
 </style>
 </head>
 <body>
-<header>
-  <h1>First Things First</h1>
-  <p>Covey Quadrant Task Manager</p>
-</header>
-<div class="print-report-date" id="printDate"></div>
-<div class="input-bar">
-  <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
-  <button class="attach-btn-bar" id="attachBarBtn" onclick="triggerAttachBar()" title="Attach files to this task">
-    &#128206; <span id="attachBarLabel">Attach</span>
-  </button>
-  <div class="toggle-group">
-    <button class="toggle-btn active-urgent" id="urgentToggle" onclick="toggleUrgent()">Urgent</button>
-    <button class="toggle-btn active-important" id="importantToggle" onclick="toggleImportant()">Important</button>
+<div id="game-wrapper">
+  <div id="hud">
+    <div class="hud-item"><span class="hud-icon">💰</span><span class="hud-val" id="hud-money">$0</span></div>
+    <div class="hud-item"><span class="hud-icon">📅</span><span class="hud-val" id="hud-day">Day 1</span></div>
+    <div class="hud-item"><span class="hud-icon">⏱️</span><span class="hud-val" id="hud-time">1:30</span></div>
+    <div class="hud-item"><span class="hud-icon">⭐</span><div id="sat-bar"><div id="sat-fill" style="width:100%"></div></div><span class="hud-val" id="hud-sat">100%</span></div>
+    <div class="hud-item"><span class="hud-icon">🎯</span><span class="hud-val" id="hud-goal">$0/$60</span></div>
+    <div class="hud-item"><span class="hud-icon">🍕</span><span class="hud-val" id="hud-pizza">—</span></div>
   </div>
-  <button class="add-btn" onclick="addTask()">Add Task</button>
-</div>
-<div class="grid-wrapper">
-  <div class="quadrant-grid">
-    <div class="quadrant q1" id="q1-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>I &mdash; Urgent &amp; Important</span>
-          <span class="header-subtitle">Do first &mdash; deadlines, crises, last-minute demands</span>
-        </div>
-        <span class="count" id="q1-count">0</span>
-      </div>
-      <div class="quadrant-body" id="q1-body"></div>
+  <div id="game-area">
+    <div class="road" id="road"></div>
+    <div class="canopy"><span class="canopy-title">Patel's Corner</span></div>
+
+    <!-- Pumps -->
+    <div class="station pump-station" id="pump-0" style="top:60px;left:50px">
+      <div class="station-icon">⛽</div><div class="station-label">Pump 1</div>
+      <div class="station-sub" id="pump-0-sub"></div>
+      <div class="sbar"><div class="sbar-fill green" id="pump-0-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="car-0">🚗</div>
     </div>
-    <div class="quadrant q2" id="q2-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>II &mdash; Not Urgent &amp; Important</span>
-          <span class="header-subtitle">Schedule it &mdash; long-term goals, planning, growth</span>
-        </div>
-        <span class="count" id="q2-count">0</span>
-      </div>
-      <div class="quadrant-body" id="q2-body"></div>
+    <div class="station pump-station" id="pump-1" style="top:60px;left:215px">
+      <div class="station-icon">⛽</div><div class="station-label">Pump 2</div>
+      <div class="station-sub" id="pump-1-sub"></div>
+      <div class="sbar"><div class="sbar-fill green" id="pump-1-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="car-1">🚙</div>
     </div>
-    <div class="quadrant q3" id="q3-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>III &mdash; Urgent &amp; Not Important</span>
-          <span class="header-subtitle">Delegate it &mdash; interruptions, busywork, most emails</span>
-        </div>
-        <span class="count" id="q3-count">0</span>
-      </div>
-      <div class="quadrant-body" id="q3-body"></div>
+    <div class="station pump-station" id="pump-2" style="top:60px;left:385px">
+      <div class="station-icon">⛽</div><div class="station-label">Pump 3</div>
+      <div class="station-sub" id="pump-2-sub"></div>
+      <div class="sbar"><div class="sbar-fill green" id="pump-2-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="car-2">🚕</div>
     </div>
-    <div class="quadrant q4" id="q4-panel">
-      <div class="quadrant-header">
-        <div class="header-left">
-          <span>IV &mdash; Not Urgent &amp; Not Important</span>
-          <span class="header-subtitle">Eliminate it &mdash; distractions, time-wasters, procrastination</span>
-        </div>
-        <span class="count" id="q4-count">0</span>
+    <div class="station pump-station" id="pump-3" style="top:60px;left:555px">
+      <div class="station-icon">⛽</div><div class="station-label">Pump 4</div>
+      <div class="station-sub" id="pump-3-sub"></div>
+      <div class="sbar"><div class="sbar-fill green" id="pump-3-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="car-3">🏎️</div>
+    </div>
+
+    <!-- Area backgrounds -->
+    <div class="area-bg" id="parking-bg"></div>
+    <div class="area-bg" id="drivethru-bg"></div>
+    <div class="area-bg" id="bathroom-bg"></div>
+    <div class="area-bg" id="store-bg"></div>
+    <div id="store-label">— Patel's Corner Store —</div>
+
+    <!-- Middle row stations -->
+    <div class="station mid-station" id="parking-station">
+      <div class="station-icon">🧹</div><div class="station-label">Parking Lot</div>
+      <div class="station-sub" id="parking-sub">Clean</div>
+      <div class="sbar"><div class="sbar-fill green" id="parking-bar" style="width:100%"></div></div>
+    </div>
+    <div class="station mid-station" id="drivethru-station">
+      <div class="station-icon">🚘</div><div class="station-label">Drive-Thru</div>
+      <div class="station-sub" id="drivethru-sub">No orders</div>
+      <div class="sbar"><div class="sbar-fill green" id="drivethru-bar" style="width:0%"></div></div>
+      <div class="car-slot" id="dt-car">🚗</div>
+    </div>
+    <div class="station mid-station" id="bathroom-station">
+      <div class="station-icon">🚻</div><div class="station-label">Bathroom</div>
+      <div class="station-sub" id="bathroom-sub">Clean</div>
+      <div class="sbar"><div class="sbar-fill green" id="bathroom-bar" style="width:100%"></div></div>
+    </div>
+
+    <!-- Store stations -->
+    <div class="station store-station" id="counter-station">
+      <div class="station-icon">🛒</div><div class="station-label">Counter</div>
+      <div class="station-sub" id="counter-sub">No customers</div>
+      <div class="sbar"><div class="sbar-fill green" id="counter-bar" style="width:0%"></div></div>
+    </div>
+    <div class="station store-station" id="pizza-station">
+      <div class="station-icon">🍕</div><div class="station-label">Pizza Oven</div>
+      <div class="station-sub" id="pizza-sub">No Pizza</div>
+      <div class="sbar"><div class="sbar-fill orange" id="pizza-bar" style="width:0%"></div></div>
+    </div>
+    <div class="station store-station" id="cooler-station">
+      <div class="station-icon">❄️</div><div class="station-label">Coolers</div>
+      <div class="station-sub" id="cooler-sub">Stocked</div>
+      <div class="sbar"><div class="sbar-fill blue" id="cooler-bar" style="width:100%"></div></div>
+    </div>
+    <div class="station store-station" id="floor-station">
+      <div class="station-icon">🧽</div><div class="station-label">Floor</div>
+      <div class="station-sub" id="floor-sub">Clean</div>
+      <div class="sbar"><div class="sbar-fill green" id="floor-bar" style="width:100%"></div></div>
+    </div>
+
+    <!-- Clerk -->
+    <div id="clerk">👷</div>
+    <div id="clerk-label">Idle</div>
+    <div id="clerk-progress">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="3"/>
+        <circle id="prog-ring" cx="18" cy="18" r="15" fill="none" stroke="#9f7aea" stroke-width="3" stroke-dasharray="94.25" stroke-dashoffset="94.25" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+    </div>
+    <div id="day-banner">Day 1</div>
+
+    <!-- SCREENS -->
+    <div class="screen-overlay show" id="title-screen">
+      <div class="screen-title">🏪 Patel's Corner</div>
+      <div class="screen-sub">Run the busiest gas station corner store in town! Pump gas, bake pizza, serve the drive-thru, and grow your empire one upgrade at a time.</div>
+      <div class="instructions">
+        <b>How to play:</b><br>
+        🖱️ Click stations to send your clerk there<br>
+        ⛽ <b>Pumps</b> — Activate when cars arrive<br>
+        🚘 <b>Drive-Thru</b> — Serve cars at the window<br>
+        🍕 <b>Pizza Oven</b> — Bake pies, pull before they burn!<br>
+        🛒 <b>Counter</b> — Ring up walk-in customers<br>
+        ❄️ <b>Coolers</b> — Restock before they empty<br>
+        🚻🧹🧽 <b>Clean</b> — Bathroom, parking, floors<br><br>
+        💰 Earn money to buy upgrades between days!<br>
+        🍺🌿💸 Unlock new services as you level up!<br>
+        ⭐ Earn stars for great performance!
       </div>
-      <div class="quadrant-body" id="q4-body"></div>
+      <button class="btn btn-primary" onclick="startGame()">Open for Business!</button>
+      <div class="high-score" id="title-highscore"></div>
+    </div>
+
+    <div class="screen-overlay" id="dayend-screen">
+      <div class="screen-title" id="dayend-title">Day Complete!</div>
+      <div class="dayend-stars" id="dayend-stars"></div>
+      <div class="screen-stats" id="dayend-stats"></div>
+      <div class="shop-section" id="shop-section">
+        <div class="shop-header">
+          <div class="shop-title">Upgrade Shop</div>
+          <div class="shop-balance" id="shop-balance">$0</div>
+        </div>
+        <div class="shop-grid" id="shop-grid"></div>
+      </div>
+      <button class="btn btn-primary" id="dayend-btn" onclick="nextDay()">Start Next Day</button>
+      <button class="btn btn-secondary" onclick="restartGame()">Restart Game</button>
+    </div>
+
+    <div class="screen-overlay" id="gameover-screen">
+      <div class="screen-title">💀 Game Over</div>
+      <div class="screen-sub" id="gameover-reason"></div>
+      <div class="screen-stats" id="gameover-stats"></div>
+      <button class="btn btn-danger" onclick="restartGame()">Try Again</button>
     </div>
   </div>
 </div>
-<div class="extra-sections">
-  <div class="section monitor" id="monitor-panel">
-    <div class="quadrant-header">
-      <div class="header-left">
-        <span>Monitor</span>
-        <span class="header-subtitle">Keep an eye on &mdash; waiting on others, pending decisions</span>
-      </div>
-      <span class="count" id="monitor-count">0</span>
-    </div>
-    <div class="quadrant-body" id="monitor-body"></div>
-  </div>
-  <div class="section completed" id="completed-panel">
-    <div class="quadrant-header">
-      <div class="header-left">
-        <span>Completed</span>
-        <span class="header-subtitle">Done &mdash; finished tasks and accomplishments</span>
-      </div>
-      <span class="count" id="completed-count">0</span>
-    </div>
-    <div class="quadrant-body" id="completed-body"></div>
-  </div>
-</div>
-<div class="toolbar">
-  <button onclick="printReport()">Print Report</button>
-  <button onclick="exportJSON()">Export JSON</button>
-  <button onclick="document.getElementById('importFile').click()">Import JSON</button>
-  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-</div>
-<input type="file" id="attachBarFile" style="display:none" multiple onchange="handleAttachBarFile(event)">
-<div id="sync-status">Syncing...</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyDDC1BjHMCuMRxMwLp2bdgY8820Xf8U6Mw",
-  authDomain: "covey-todo-b3ef9.firebaseapp.com",
-  projectId: "covey-todo-b3ef9",
-  storageBucket: "covey-todo-b3ef9.firebasestorage.app",
-  messagingSenderId: "829811005116",
-  appId: "1:829811005116:web:ed188642a1bff4797762b9"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const tasksCol = collection(db, "tasks");
-let tasks = [];
-let isUrgent = true;
-let isImportant = true;
-let syncTimer = null;
-let pendingBarAttachments = [];
 
-function showSync(msg) {
-  const el = document.getElementById('sync-status');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => el.classList.remove('show'), 2000);
-}
+<script>
+// ══════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════
+const DAY_LENGTH = 90;
+const BASE_CLERK_SPEED = 220;
+const CARS = ['🚗','🚙','🚕','🏎️','🚗','🚙','🛻'];
 
-const q = query(tasksCol, orderBy("createdAt"));
-onSnapshot(q, (snapshot) => {
-  tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-  render();
-});
+const PIZZA_COOK_TIME = 12;
+const PIZZA_GRACE = 10;
+const PIZZA_READY_TIME = 25;
+const PIZZA_COUNTER_BONUS = 5;
 
-function getQuadrant(urgent, important) {
-  if (urgent && important) return 'q1';
-  if (!urgent && important) return 'q2';
-  if (urgent && !important) return 'q3';
-  return 'q4';
-}
-
-window.toggleUrgent = function() {
-  isUrgent = !isUrgent;
-  document.getElementById('urgentToggle').classList.toggle('active-urgent', isUrgent);
+const STATION_POS = {
+  pump0:{x:122,y:165}, pump1:{x:287,y:165}, pump2:{x:457,y:165}, pump3:{x:627,y:165},
+  parking:{x:142,y:300}, drivethru:{x:384,y:300}, bathroom:{x:642,y:300},
+  counter:{x:117,y:475}, pizza:{x:297,y:475}, coolers:{x:477,y:475}, floor:{x:657,y:475}
 };
 
-window.toggleImportant = function() {
-  isImportant = !isImportant;
-  document.getElementById('importantToggle').classList.toggle('active-important', isImportant);
+const BASE_TASK_DURATION = {
+  pump0:1,pump1:1,pump2:1,pump3:1,
+  parking:3,bathroom:4,drivethru:1.5,
+  counter:2,coolers:3,floor:3,pizza:2
 };
 
-window.triggerAttachBar = function() {
-  document.getElementById('attachBarFile').click();
-};
+// Upgrades
+const UPGRADES = [
+  {id:'speedShoes',  name:'Speed Shoes',   desc:'Clerk 25% faster',         cost:100, day:1, icon:'👟'},
+  {id:'turboPumps',  name:'Turbo Pumps',   desc:'Gas fills 40% faster',     cost:120, day:1, icon:'⚡'},
+  {id:'megaCoolers', name:'Mega Coolers',   desc:'Coolers deplete 40% slower',cost:150,day:2, icon:'🧊'},
+  {id:'quickClean',  name:'Quick Clean',    desc:'Cleaning 30% faster',      cost:90,  day:2, icon:'✨'},
+  {id:'doubleOven',  name:'Double Oven',    desc:'Pizza cooks 40% faster',   cost:180, day:3, icon:'🔥'},
+  {id:'beerVapes',   name:'Beer & Vapes',   desc:'+$4 per customer sale',    cost:250, day:4, icon:'🍺'},
+  {id:'checkCashing',name:'Check Cashing',  desc:'+$5 per counter sale',     cost:300, day:6, icon:'💸'},
+  {id:'cbd',         name:'CBD Display',    desc:'Passive +$2 every 12s',    cost:200, day:8, icon:'🌿'},
+];
 
-window.handleAttachBarFile = function(event) {
-  const files = event.target.files;
-  if (!files.length) return;
-  Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      pendingBarAttachments.push({ name: file.name, type: file.type, size: file.size, data: e.target.result });
-      updateAttachBarBtn();
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
-};
-
-function updateAttachBarBtn() {
-  const btn = document.getElementById('attachBarBtn');
-  const label = document.getElementById('attachBarLabel');
-  if (pendingBarAttachments.length > 0) {
-    btn.classList.add('has-files');
-    label.textContent = pendingBarAttachments.length + ' file' + (pendingBarAttachments.length > 1 ? 's' : '') + ' attached';
-  } else {
-    btn.classList.remove('has-files');
-    label.textContent = 'Attach';
-  }
-}
-
-window.addTask = async function() {
-  const input = document.getElementById('taskInput');
-  const text = input.value.trim();
-  if (!text) return;
-  const quadrant = getQuadrant(isUrgent, isImportant);
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const task = {
-    text,
-    quadrant,
-    createdAt: new Date().toISOString(),
-    completedAt: null,
-    attachments: pendingBarAttachments.slice()
+function dayConfig(day) {
+  return {
+    carInterval: Math.max(3.5, 15 - day * 1.8),
+    counterInterval: Math.max(5, 20 - day * 2),
+    dtInterval: Math.max(5, 18 - day * 1.5),
+    degradeMultiplier: 1 + day * 0.25,
+    patience: Math.max(8, 28 - day * 2),
+    goal: 40 + day * 35
   };
-  input.value = '';
-  pendingBarAttachments = [];
-  updateAttachBarBtn();
-  isUrgent = true;
-  isImportant = true;
-  document.getElementById('urgentToggle').classList.add('active-urgent');
-  document.getElementById('importantToggle').classList.add('active-important');
-  input.focus();
-  showSync('Saving...');
-  await setDoc(doc(tasksCol, id), task);
-  showSync('Saved ✓');
-};
-
-async function moveTask(taskId, newQuadrant) {
-  const task = tasks.find(t => t.id === taskId);
-  if (!task) return;
-  const updated = { ...task, quadrant: newQuadrant, completedAt: newQuadrant === 'completed' ? new Date().toISOString() : null };
-  delete updated.id;
-  showSync('Saving...');
-  await setDoc(doc(tasksCol, taskId), updated);
-  showSync('Saved ✓');
 }
 
-window.deleteTask = async function(taskId) {
-  showSync('Deleting...');
-  await deleteDoc(doc(tasksCol, taskId));
-  showSync('Deleted ✓');
-};
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let G = {};
 
-function formatDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+function freshState() {
+  return {
+    screen:'title', day:1, totalMoney:0, dayMoney:0, satisfaction:100,
+    timeLeft:DAY_LENGTH, customersServed:0, dayCustomers:0, pizzasMade:0, dayPizzas:0,
+    totalStars:0, dayStars:[],
+
+    clerk:{x:400,y:510,targetKey:null,arrived:false,taskProgress:0,taskDuration:0},
+
+    pumps:[
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚗',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚙',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🚕',payment:0},
+      {state:'empty',patience:0,maxPatience:28,fillProgress:0,carType:'🏎️',payment:0}
+    ],
+
+    pizza:{state:'empty',cookProgress:0,readyTimer:0},
+
+    driveThru:{queue:0,patience:0,maxPatience:20,carType:'🚗'},
+
+    coolerStock:100, counterQueue:0, counterPatience:0, counterMaxPatience:20,
+    bathroomClean:100, floorClean:100, parkingClean:100,
+
+    nextCarTimer:5, nextCounterTimer:12, nextDTTimer:10,
+    cbdTimer:12,
+
+    upgrades:{speedShoes:false,turboPumps:false,megaCoolers:false,quickClean:false,
+              doubleOven:false,beerVapes:false,checkCashing:false,cbd:false},
+
+    paused:false, dayStarted:false
+  };
 }
 
-function buildTaskEl(task) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'task-item-wrapper';
-  const div = document.createElement('div');
-  div.className = 'task-item';
-  const textSpan = document.createElement('span');
-  textSpan.className = 'task-text';
-  textSpan.textContent = task.text;
-  const dateSpan = document.createElement('span');
-  dateSpan.className = 'task-date';
-  dateSpan.textContent = formatDate(task.createdAt);
-  const select = document.createElement('select');
-  select.className = 'task-select';
-  [
-    { value: 'q1', label: 'I - Urgent & Important' },
-    { value: 'q2', label: 'II - Not Urgent & Important' },
-    { value: 'q3', label: 'III - Urgent & Not Important' },
-    { value: 'q4', label: 'IV - Not Urgent & Not Important' },
-    { value: 'monitor', label: 'Monitor' },
-    { value: 'completed', label: 'Completed' }
-  ].forEach(opt => {
-    const o = document.createElement('option');
-    o.value = opt.value;
-    o.textContent = opt.label;
-    if (opt.value === task.quadrant) o.selected = true;
-    select.appendChild(o);
-  });
-  select.addEventListener('change', function() { moveTask(task.id, this.value); });
-  const delBtn = document.createElement('button');
-  delBtn.className = 'task-delete';
-  delBtn.innerHTML = '&times;';
-  delBtn.title = 'Delete task';
-  delBtn.addEventListener('click', () => window.deleteTask(task.id));
-  div.appendChild(textSpan);
-  div.appendChild(dateSpan);
-  div.appendChild(select);
-  div.appendChild(delBtn);
-  wrapper.appendChild(div);
-  const attachments = task.attachments || [];
-  if (attachments.length > 0) {
-    const attDiv = document.createElement('div');
-    attDiv.className = 'task-attachments';
-    attachments.forEach((att, idx) => {
-      const chip = document.createElement('span');
-      chip.className = 'attachment-chip';
-      chip.title = att.name;
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'att-name';
-      nameSpan.textContent = att.name;
-      chip.appendChild(nameSpan);
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'att-remove';
-      removeBtn.innerHTML = '&times;';
-      removeBtn.title = 'Remove attachment';
-      removeBtn.addEventListener('click', function(e) { e.stopPropagation(); removeAttachment(task.id, idx); });
-      chip.appendChild(removeBtn);
-      chip.addEventListener('click', () => downloadAttachment(att));
-      attDiv.appendChild(chip);
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const gameArea = $('game-area');
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function randFloat(a,b){return Math.random()*(b-a)+a}
+function clerkSpeed(){return BASE_CLERK_SPEED * (G.upgrades.speedShoes ? 1.25 : 1)}
+function taskDur(key){
+  let d = BASE_TASK_DURATION[key] || 2;
+  if (key === 'pizza') d = getPizzaTaskDur();
+  if (['parking','bathroom','floor'].includes(key) && G.upgrades.quickClean) d *= 0.7;
+  return d;
+}
+function getPizzaTaskDur(){
+  const p = G.pizza;
+  if (p.state === 'empty') return G.upgrades.doubleOven ? 1.5 : 2;
+  if (p.state === 'cooking' && p.cookProgress >= pizzaCookTime()) return 0.8;
+  if (p.state === 'burnt') return 2;
+  return 2;
+}
+function pizzaCookTime(){return PIZZA_COOK_TIME * (G.upgrades.doubleOven ? 0.6 : 1)}
+function pumpFillTime(){return G.upgrades.turboPumps ? 3 : 5}
+function saleBonus(){return (G.upgrades.beerVapes ? 4 : 0) + (G.upgrades.checkCashing ? 5 : 0)}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+function init(){
+  const road = $('road');
+  for(let i=0;i<20;i++){const d=document.createElement('div');d.className='road-dash';d.style.left=(i*42+10)+'px';road.appendChild(d)}
+
+  document.querySelectorAll('.station').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(G.screen!=='playing')return;
+      const id=el.id;let key=null;
+      if(id.startsWith('pump-'))key='pump'+id.split('-')[1];
+      else if(id==='parking-station')key='parking';
+      else if(id==='drivethru-station')key='drivethru';
+      else if(id==='bathroom-station')key='bathroom';
+      else if(id==='counter-station')key='counter';
+      else if(id==='pizza-station')key='pizza';
+      else if(id==='cooler-station')key='coolers';
+      else if(id==='floor-station')key='floor';
+      if(key)assignClerk(key);
     });
-    wrapper.appendChild(attDiv);
-  }
-  return wrapper;
+  });
+
+  const hs=localStorage.getItem('pc-highscore');
+  const ts=localStorage.getItem('pc-totalstars');
+  let info=[];
+  if(hs)info.push('Best Bank: <span>$'+hs+'</span>');
+  if(ts)info.push('Total Stars: <span>'+ts+' ⭐</span>');
+  if(info.length)$('title-highscore').innerHTML=info.join(' &nbsp;|&nbsp; ');
+
+  resize();
+  window.addEventListener('resize',resize);
 }
 
-const emptyHints = {
-  q1: '<span class="empty-title">No tasks here</span>Tasks with deadlines or consequences for delay.<br><span class="empty-examples">e.g. Pay bills, fix urgent bug, doctor appointment tomorrow</span>',
-  q2: '<span class="empty-title">No tasks here</span>Long-term goals that need consistent progress.<br><span class="empty-examples">e.g. Write a book, develop marketing strategy, learn a new skill</span>',
-  q3: '<span class="empty-title">No tasks here</span>Busywork that feels urgent but doesn't move you forward.<br><span class="empty-examples">e.g. Schedule appointments, reply to routine emails, update spreadsheets</span>',
-  q4: '<span class="empty-title">No tasks here</span>Distractions that steal your time.<br><span class="empty-examples">e.g. Excessive social media, unnecessary meetings, binge-watching</span>',
-  monitor: '<span class="empty-title">Nothing to monitor</span>Park tasks here waiting on someone else or a future decision.',
-  completed: '<span class="empty-title">No completed tasks yet</span>Move tasks here when they're done to track your progress.'
+function resize(){
+  const w=document.getElementById('game-wrapper');
+  const s=Math.min(window.innerWidth/820,window.innerHeight/640,1);
+  w.style.transform='scale('+s+')';
+}
+
+// ══════════════════════════════════════════
+// SCREENS
+// ══════════════════════════════════════════
+function hideAll(){['title-screen','dayend-screen','gameover-screen'].forEach(id=>$(id).classList.remove('show'))}
+function showScr(id){$(id).classList.add('show')}
+
+window.startGame=function(){
+  G=freshState();G.screen='playing';G.dayStarted=true;
+  hideAll();showDayBanner();
+};
+window.restartGame=function(){
+  G=freshState();G.screen='title';hideAll();showScr('title-screen');
+  const hs=localStorage.getItem('pc-highscore');
+  const ts=localStorage.getItem('pc-totalstars');
+  let info=[];
+  if(hs)info.push('Best Bank: <span>$'+hs+'</span>');
+  if(ts)info.push('Total Stars: <span>'+ts+' ⭐</span>');
+  $('title-highscore').innerHTML=info.length?info.join(' &nbsp;|&nbsp; '):'';
+};
+window.nextDay=function(){
+  G.day++;G.dayMoney=0;G.dayCustomers=0;G.dayPizzas=0;
+  G.timeLeft=DAY_LENGTH;G.satisfaction=Math.min(100,G.satisfaction+10);
+  G.clerk={x:400,y:510,targetKey:null,arrived:false,taskProgress:0,taskDuration:0};
+  G.pumps.forEach(p=>{p.state='empty';p.patience=0;p.fillProgress=0});
+  G.pizza={state:'empty',cookProgress:0,readyTimer:0};
+  G.driveThru={queue:0,patience:0,maxPatience:20,carType:'🚗'};
+  G.coolerStock=Math.min(100,G.coolerStock+30);
+  G.counterQueue=0;G.counterPatience=0;
+  G.bathroomClean=Math.min(100,G.bathroomClean+20);
+  G.floorClean=Math.min(100,G.floorClean+20);
+  G.parkingClean=Math.min(100,G.parkingClean+20);
+  G.nextCarTimer=3;G.nextCounterTimer=8;G.nextDTTimer=6;G.cbdTimer=12;
+  G.screen='playing';G.paused=false;
+  hideAll();showDayBanner();
 };
 
-function render() {
-  const buckets = { q1: [], q2: [], q3: [], q4: [], monitor: [], completed: [] };
-  tasks.forEach(t => { if (buckets[t.quadrant]) buckets[t.quadrant].push(t); });
-  Object.keys(buckets).forEach(key => {
-    const body = document.getElementById(key + '-body');
-    const countEl = document.getElementById(key + '-count');
-    body.innerHTML = '';
-    countEl.textContent = buckets[key].length;
-    if (buckets[key].length === 0) {
-      const msg = document.createElement('div');
-      msg.className = 'empty-msg';
-      msg.innerHTML = emptyHints[key] || 'No tasks here';
-      body.appendChild(msg);
-    } else {
-      buckets[key].forEach(task => body.appendChild(buildTaskEl(task)));
+function showDayBanner(){
+  const b=$('day-banner');b.textContent='Day '+G.day;
+  b.classList.remove('show');void b.offsetWidth;b.classList.add('show');
+}
+
+function endDay(){
+  G.paused=true;
+  const cfg=dayConfig(G.day);
+  const tipRate=G.satisfaction/100;
+  const tips=Math.round(G.dayMoney*tipRate*0.2);
+  const total=G.dayMoney+tips;
+  const metGoal=total>=cfg.goal;
+
+  // Stars
+  let stars=0;
+  if(metGoal)stars=1;
+  if(metGoal&&G.satisfaction>70)stars=2;
+  if(metGoal&&G.satisfaction>85)stars=3;
+  G.dayStars.push(stars);
+  G.totalStars=G.dayStars.reduce((a,b)=>a+b,0);
+
+  const hs=parseInt(localStorage.getItem('pc-highscore')||'0');
+  if(G.totalMoney+tips>hs)localStorage.setItem('pc-highscore',G.totalMoney+tips);
+  const ts=parseInt(localStorage.getItem('pc-totalstars')||'0');
+  if(G.totalStars>ts)localStorage.setItem('pc-totalstars',G.totalStars);
+
+  G.totalMoney+=tips;
+
+  $('dayend-title').textContent=metGoal?'🎉 Day '+G.day+' Complete!':'😅 Day '+G.day+' Over';
+  $('dayend-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  $('dayend-stats').innerHTML=
+    'Earnings: <span>$'+G.dayMoney+'</span><br>'+
+    'Tip Bonus ('+Math.round(tipRate*100)+'%): <span>+$'+tips+'</span><br>'+
+    'Day Total: <span>$'+total+'</span> / Goal: $'+cfg.goal+'<br>'+
+    'Customers: <span>'+G.dayCustomers+'</span> &nbsp; Pizzas: <span class="pizza-stat">'+G.dayPizzas+' 🍕</span><br>'+
+    'Satisfaction: <span>'+Math.round(G.satisfaction)+'%</span> &nbsp; Bank: <span>$'+G.totalMoney+'</span>';
+
+  $('dayend-btn').textContent=metGoal?'Start Day '+(G.day+1)+' →':'Retry Day '+G.day;
+  $('dayend-btn').onclick=metGoal?window.nextDay:function(){G.day--;window.nextDay()};
+
+  renderShop();
+  G.screen='dayend';hideAll();showScr('dayend-screen');
+}
+
+function gameOver(reason){
+  G.paused=true;
+  const hs=parseInt(localStorage.getItem('pc-highscore')||'0');
+  if(G.totalMoney>hs)localStorage.setItem('pc-highscore',G.totalMoney);
+  const ts=parseInt(localStorage.getItem('pc-totalstars')||'0');
+  if(G.totalStars>ts)localStorage.setItem('pc-totalstars',G.totalStars);
+
+  $('gameover-reason').textContent=reason;
+  $('gameover-stats').innerHTML=
+    'Survived: <span>'+G.day+' day'+(G.day>1?'s':'')+'</span><br>'+
+    'Total Earned: <span>$'+G.totalMoney+'</span><br>'+
+    'Customers: <span>'+G.customersServed+'</span> &nbsp; Pizzas: <span class="pizza-stat">'+G.pizzasMade+' 🍕</span><br>'+
+    'Total Stars: <span>'+G.totalStars+' ⭐</span>';
+  G.screen='gameover';hideAll();showScr('gameover-screen');
+}
+
+// ══════════════════════════════════════════
+// UPGRADE SHOP
+// ══════════════════════════════════════════
+function renderShop(){
+  $('shop-balance').textContent='Balance: $'+G.totalMoney;
+  const grid=$('shop-grid');grid.innerHTML='';
+  UPGRADES.forEach(u=>{
+    const owned=G.upgrades[u.id];
+    const locked=G.day<u.day;
+    const canAfford=G.totalMoney>=u.cost;
+    const div=document.createElement('div');
+    div.className='shop-item'+(owned?' owned':'');
+    let btnClass,btnText;
+    if(owned){btnClass='owned-btn';btnText='OWNED'}
+    else if(locked){btnClass='locked';btnText='Day '+u.day}
+    else if(!canAfford){btnClass='poor';btnText='$'+u.cost}
+    else{btnClass='buy';btnText='$'+u.cost}
+    div.innerHTML=
+      '<span class="shop-icon">'+u.icon+'</span>'+
+      '<div class="shop-info"><div class="shop-name">'+u.name+'</div><div class="shop-desc">'+u.desc+'</div></div>'+
+      '<button class="shop-btn '+btnClass+'" '+(owned||locked||!canAfford?'disabled':'')+
+      ' data-uid="'+u.id+'" data-cost="'+u.cost+'">'+btnText+'</button>';
+    if(!owned&&!locked&&canAfford){
+      div.querySelector('button').addEventListener('click',function(){
+        buyUpgrade(u.id,u.cost);
+      });
+    }
+    grid.appendChild(div);
+  });
+}
+
+function buyUpgrade(id,cost){
+  if(G.upgrades[id]||G.totalMoney<cost)return;
+  G.totalMoney-=cost;G.upgrades[id]=true;
+  renderShop();
+  // Update stats display
+  $('dayend-stats').innerHTML=$('dayend-stats').innerHTML.replace(/Bank: <span>\$\d+/,'Bank: <span>$'+G.totalMoney);
+}
+
+// ══════════════════════════════════════════
+// CLERK
+// ══════════════════════════════════════════
+function assignClerk(key){
+  if(!canDoTask(key))return;
+  const c=G.clerk;
+  if(c.targetKey===key&&c.arrived&&c.taskProgress>0)return;
+  c.targetKey=key;c.arrived=false;c.taskProgress=0;
+  c.taskDuration=taskDur(key);
+  document.querySelectorAll('.station.active').forEach(el=>el.classList.remove('active'));
+  const el=stationEl(key);if(el)el.classList.add('active');
+}
+
+function canDoTask(key){
+  if(key.startsWith('pump')){const i=+key.replace('pump','');return G.pumps[i].state==='waiting'}
+  if(key==='counter')return G.counterQueue>0;
+  if(key==='drivethru')return G.driveThru.queue>0;
+  if(key==='coolers')return G.coolerStock<90;
+  if(key==='bathroom')return G.bathroomClean<90;
+  if(key==='floor')return G.floorClean<90;
+  if(key==='parking')return G.parkingClean<90;
+  if(key==='pizza'){
+    const p=G.pizza;
+    return p.state==='empty'||(p.state==='cooking'&&p.cookProgress>=pizzaCookTime())||p.state==='burnt';
+  }
+  return false;
+}
+
+function stationEl(key){
+  if(key.startsWith('pump'))return $('pump-'+key.replace('pump',''));
+  if(key==='parking')return $('parking-station');
+  if(key==='drivethru')return $('drivethru-station');
+  if(key==='bathroom')return $('bathroom-station');
+  if(key==='counter')return $('counter-station');
+  if(key==='pizza')return $('pizza-station');
+  if(key==='coolers')return $('cooler-station');
+  if(key==='floor')return $('floor-station');
+  return null;
+}
+
+function updateClerk(dt){
+  const c=G.clerk;if(!c.targetKey)return;
+  const t=STATION_POS[c.targetKey];if(!t)return;
+  if(!c.arrived){
+    const dx=t.x-c.x,dy=t.y-c.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<5){c.x=t.x;c.y=t.y;c.arrived=true;c.taskProgress=0}
+    else{const s=clerkSpeed()*dt;c.x+=(dx/dist)*s;c.y+=(dy/dist)*s}
+  }else{
+    if(!canDoTask(c.targetKey)){completeTask();return}
+    c.taskProgress+=dt;
+    if(c.taskProgress>=c.taskDuration)completeTask();
+  }
+}
+
+function completeTask(){
+  const c=G.clerk,key=c.targetKey;if(!key)return;
+  const pos=STATION_POS[key];
+
+  if(key.startsWith('pump')){
+    const i=+key.replace('pump','');
+    if(G.pumps[i].state==='waiting'){G.pumps[i].state='filling';G.pumps[i].fillProgress=0}
+  }else if(key==='coolers'){
+    G.coolerStock=100;spawnFloat(pos.x,pos.y-30,'Restocked!',false);
+  }else if(key==='counter'){
+    if(G.counterQueue>0&&G.coolerStock>0){
+      G.counterQueue--;G.coolerStock=Math.max(0,G.coolerStock-randInt(12,20));
+      let pay=randInt(3,9)+saleBonus();
+      if(G.pizza.state==='ready')pay+=PIZZA_COUNTER_BONUS;
+      earnMoney(pay,pos.x,pos.y-30,G.pizza.state==='ready');
+    }
+  }else if(key==='drivethru'){
+    if(G.driveThru.queue>0){
+      G.driveThru.queue--;
+      let pay=randInt(4,10)+saleBonus();
+      if(G.pizza.state==='ready')pay+=3;
+      earnMoney(pay,pos.x,pos.y-30,G.pizza.state==='ready');
+    }
+  }else if(key==='pizza'){
+    const p=G.pizza;
+    if(p.state==='empty'){
+      p.state='cooking';p.cookProgress=0;
+      spawnFloat(pos.x,pos.y-30,'Pizza in!',false,true);
+    }else if(p.state==='cooking'&&p.cookProgress>=pizzaCookTime()){
+      p.state='ready';p.readyTimer=PIZZA_READY_TIME;
+      G.pizzasMade++;G.dayPizzas++;
+      spawnFloat(pos.x,pos.y-30,'HOT & READY!',false,true);
+    }else if(p.state==='burnt'){
+      p.state='empty';p.cookProgress=0;
+      spawnFloat(pos.x,pos.y-30,'Cleaned!',false,true);
+    }
+  }else if(key==='bathroom'){
+    G.bathroomClean=100;spawnFloat(pos.x,pos.y-30,'Sparkling!',false);
+  }else if(key==='floor'){
+    G.floorClean=100;spawnFloat(pos.x,pos.y-30,'Spotless!',false);
+  }else if(key==='parking'){
+    G.parkingClean=100;spawnFloat(pos.x,pos.y-30,'Swept!',false);
+  }
+
+  const el=stationEl(key);if(el)el.classList.remove('active');
+  c.targetKey=null;c.arrived=false;c.taskProgress=0;
+}
+
+// ══════════════════════════════════════════
+// CUSTOMERS
+// ══════════════════════════════════════════
+function spawnCar(){
+  const cfg=dayConfig(G.day);
+  const empties=[];G.pumps.forEach((p,i)=>{if(p.state==='empty')empties.push(i)});
+  if(!empties.length)return;
+  const i=empties[randInt(0,empties.length-1)],p=G.pumps[i];
+  p.state='waiting';p.patience=cfg.patience+randInt(-3,3);p.maxPatience=p.patience;
+  p.fillProgress=0;p.carType=CARS[randInt(0,CARS.length-1)];p.payment=randInt(8,20);
+  $('car-'+i).textContent=p.carType;
+}
+
+function spawnCounterCustomer(){
+  if(G.counterQueue>=3)return;
+  const cfg=dayConfig(G.day);
+  G.counterQueue++;G.counterPatience=cfg.patience*0.8;G.counterMaxPatience=G.counterPatience;
+}
+
+function spawnDTCustomer(){
+  if(G.driveThru.queue>=2)return;
+  const cfg=dayConfig(G.day);
+  G.driveThru.queue++;G.driveThru.patience=cfg.patience*0.7;
+  G.driveThru.maxPatience=G.driveThru.patience;
+  G.driveThru.carType=CARS[randInt(0,CARS.length-1)];
+}
+
+function updateCustomers(dt){
+  const cfg=dayConfig(G.day);
+
+  G.nextCarTimer-=dt;
+  if(G.nextCarTimer<=0){spawnCar();G.nextCarTimer=cfg.carInterval+randFloat(-2,2)}
+  G.nextCounterTimer-=dt;
+  if(G.nextCounterTimer<=0){
+    spawnCounterCustomer();
+    const int=G.pizza.state==='ready'?cfg.counterInterval*0.65:cfg.counterInterval;
+    G.nextCounterTimer=int+randFloat(-2,2);
+  }
+  G.nextDTTimer-=dt;
+  if(G.nextDTTimer<=0){spawnDTCustomer();G.nextDTTimer=cfg.dtInterval+randFloat(-2,2)}
+
+  // Pumps
+  G.pumps.forEach((p,i)=>{
+    if(p.state==='waiting'){
+      p.patience-=dt;
+      if(p.patience<=0){
+        p.state='empty';G.satisfaction=Math.max(0,G.satisfaction-8);
+        spawnFloat(STATION_POS['pump'+i].x,STATION_POS['pump'+i].y-30,'😠 Left!',true);
+        if(G.clerk.targetKey==='pump'+i){
+          const el=stationEl('pump'+i);if(el)el.classList.remove('active');
+          G.clerk.targetKey=null;G.clerk.arrived=false;
+        }
+      }
+    }else if(p.state==='filling'){
+      p.fillProgress+=dt;
+      if(p.fillProgress>=pumpFillTime()){
+        p.state='empty';
+        earnMoney(p.payment,STATION_POS['pump'+i].x,STATION_POS['pump'+i].y-30);
+        G.satisfaction=Math.min(100,G.satisfaction+1.5);
+      }
     }
   });
-}
 
-async function removeAttachment(taskId, attachIdx) {
-  const task = tasks.find(t => t.id === taskId);
-  if (!task || !task.attachments) return;
-  task.attachments.splice(attachIdx, 1);
-  const { id, ...data } = task;
-  showSync('Saving...');
-  await setDoc(doc(tasksCol, taskId), data);
-  showSync('Saved ✓');
-}
-
-function downloadAttachment(att) {
-  const a = document.createElement('a');
-  a.href = att.data;
-  a.download = att.name;
-  a.click();
-}
-
-window.printReport = function() {
-  const dateEl = document.getElementById('printDate');
-  dateEl.textContent = 'Report generated: ' + new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  window.print();
-};
-
-window.exportJSON = function() {
-  const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'covey-tasks.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-window.importJSON = async function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (Array.isArray(imported)) {
-        showSync('Importing...');
-        for (const task of imported) {
-          const { id, ...data } = task;
-          await setDoc(doc(tasksCol, id || (Date.now().toString(36) + Math.random().toString(36).slice(2,5))), data);
-        }
-        showSync('Imported ✓');
+  // Counter patience
+  if(G.counterQueue>0){
+    G.counterPatience-=dt;
+    if(G.counterPatience<=0){
+      G.counterQueue=Math.max(0,G.counterQueue-1);
+      G.satisfaction=Math.max(0,G.satisfaction-5);
+      spawnFloat(STATION_POS.counter.x,STATION_POS.counter.y-30,'😠 Left!',true);
+      if(G.counterQueue>0){G.counterPatience=cfg.patience*0.8;G.counterMaxPatience=G.counterPatience}
+      if(G.clerk.targetKey==='counter'&&G.counterQueue===0){
+        const el=stationEl('counter');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
       }
-    } catch(err) { alert('Invalid JSON file'); }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-};
+    }
+  }
 
-document.getElementById('taskInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') window.addTask();
-});
+  // Drive-thru patience
+  if(G.driveThru.queue>0){
+    G.driveThru.patience-=dt;
+    if(G.driveThru.patience<=0){
+      G.driveThru.queue=Math.max(0,G.driveThru.queue-1);
+      G.satisfaction=Math.max(0,G.satisfaction-6);
+      spawnFloat(STATION_POS.drivethru.x,STATION_POS.drivethru.y-30,'😠 Left!',true);
+      if(G.driveThru.queue>0){G.driveThru.patience=cfg.patience*0.7;G.driveThru.maxPatience=G.driveThru.patience}
+      if(G.clerk.targetKey==='drivethru'&&G.driveThru.queue===0){
+        const el=stationEl('drivethru');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
+      }
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// PIZZA
+// ══════════════════════════════════════════
+function updatePizza(dt){
+  const p=G.pizza;
+  if(p.state==='cooking'){
+    p.cookProgress+=dt;
+    if(p.cookProgress>=pizzaCookTime()+PIZZA_GRACE){
+      p.state='burnt';G.satisfaction=Math.max(0,G.satisfaction-5);
+      spawnFloat(STATION_POS.pizza.x,STATION_POS.pizza.y-30,'🔥 Burnt!',true,true);
+      if(G.clerk.targetKey==='pizza'){
+        const el=stationEl('pizza');if(el)el.classList.remove('active');
+        G.clerk.targetKey=null;G.clerk.arrived=false;
+      }
+    }
+  }else if(p.state==='ready'){
+    p.readyTimer-=dt;
+    if(p.readyTimer<=0){p.state='empty';p.cookProgress=0}
+  }
+}
+
+// ══════════════════════════════════════════
+// DEGRADATION & PASSIVE
+// ══════════════════════════════════════════
+function updateDegradation(dt){
+  const m=dayConfig(G.day).degradeMultiplier;
+  const coolerMul=G.upgrades.megaCoolers?0.6:1;
+  G.coolerStock=Math.max(0,G.coolerStock-1.2*m*coolerMul*dt);
+  G.bathroomClean=Math.max(0,G.bathroomClean-0.9*m*dt);
+  G.floorClean=Math.max(0,G.floorClean-0.7*m*dt);
+  G.parkingClean=Math.max(0,G.parkingClean-0.55*m*dt);
+
+  if(G.bathroomClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.3*m*dt);
+  if(G.floorClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.2*m*dt);
+  if(G.parkingClean<40)G.satisfaction=Math.max(0,G.satisfaction-0.15*m*dt);
+  if(G.coolerStock<15)G.satisfaction=Math.max(0,G.satisfaction-0.15*m*dt);
+}
+
+function updatePassive(dt){
+  if(!G.upgrades.cbd)return;
+  G.cbdTimer-=dt;
+  if(G.cbdTimer<=0){
+    G.cbdTimer=12;
+    G.dayMoney+=2;G.totalMoney+=2;
+    spawnFloat(400,500,'+$2 🌿',false);
+  }
+}
+
+// ══════════════════════════════════════════
+// MONEY & EFFECTS
+// ══════════════════════════════════════════
+function earnMoney(amount,x,y,pizzaBonus){
+  G.dayMoney+=amount;G.totalMoney+=amount;G.dayCustomers++;G.customersServed++;
+  spawnFloat(x,y,'+$'+amount+(pizzaBonus?' 🍕':''),false,pizzaBonus);
+}
+
+function spawnFloat(x,y,text,isBad,isPizza){
+  const el=document.createElement('div');
+  el.className='float-text'+(isBad?' bad':'')+(isPizza&&!isBad?' pizza':'');
+  el.textContent=text;el.style.left=(x-30)+'px';el.style.top=y+'px';
+  gameArea.appendChild(el);setTimeout(()=>el.remove(),1300);
+}
+
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+function render(){
+  $('hud-money').textContent='$'+G.totalMoney;
+  $('hud-day').textContent='Day '+G.day;
+  const mins=Math.floor(Math.max(0,G.timeLeft)/60);
+  const secs=Math.floor(Math.max(0,G.timeLeft)%60);
+  $('hud-time').textContent=mins+':'+(secs<10?'0':'')+secs;
+  $('hud-time').className='hud-val'+(G.timeLeft<15?' danger':G.timeLeft<30?' warn':'');
+
+  const sat=Math.round(G.satisfaction);
+  $('hud-sat').textContent=sat+'%';
+  $('hud-sat').className='hud-val'+(sat<30?' danger':sat<60?' warn':'');
+  $('sat-fill').style.width=sat+'%';
+  $('sat-fill').style.background=sat<30?'#fc8181':sat<60?'#fbd38d':'#68d391';
+
+  const cfg=dayConfig(G.day);
+  $('hud-goal').textContent='$'+G.dayMoney+'/$'+cfg.goal;
+  $('hud-goal').className='hud-val'+(G.dayMoney>=cfg.goal?'':G.timeLeft<30?' warn':'');
+
+  // Pizza HUD
+  const ps=G.pizza.state,ph=$('hud-pizza');
+  if(ps==='empty'){ph.textContent='—';ph.className='hud-val'}
+  else if(ps==='cooking'&&G.pizza.cookProgress<pizzaCookTime()){ph.textContent='Baking...';ph.className='hud-val warn'}
+  else if(ps==='cooking'){ph.textContent='DONE!';ph.className='hud-val danger'}
+  else if(ps==='ready'){ph.textContent='HOT! '+Math.ceil(G.pizza.readyTimer)+'s';ph.className='hud-val'}
+  else if(ps==='burnt'){ph.textContent='BURNT';ph.className='hud-val danger'}
+
+  // Pumps
+  G.pumps.forEach((p,i)=>{
+    const el=$('pump-'+i),bar=$('pump-'+i+'-bar'),sub=$('pump-'+i+'-sub'),car=$('car-'+i);
+    car.classList.toggle('visible',p.state!=='empty');car.textContent=p.carType;
+    if(p.state==='empty'){
+      sub.textContent='Available';bar.style.width='0%';bar.className='sbar-fill green';
+      el.classList.remove('needs-attention','critical');
+    }else if(p.state==='waiting'){
+      const pct=(p.patience/p.maxPatience)*100;sub.textContent='⏳ Waiting';
+      bar.style.width=pct+'%';bar.className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+      el.classList.toggle('needs-attention',pct>=30&&pct<60);el.classList.toggle('critical',pct<30);
+    }else if(p.state==='filling'){
+      const pct=(p.fillProgress/pumpFillTime())*100;sub.textContent='⛽ Filling';
+      bar.style.width=pct+'%';bar.className='sbar-fill blue';
+      el.classList.remove('needs-attention','critical');
+    }
+  });
+
+  // Coolers
+  renderClean('cooler',G.coolerStock,'Stocked','Low Stock!','Empty!');
+  $('cooler-bar').className='sbar-fill '+(G.coolerStock<20?'red':G.coolerStock<50?'yellow':'blue');
+
+  // Counter
+  const cEl=$('counter-station');
+  if(G.counterQueue>0){
+    const bonusTags=(G.pizza.state==='ready'?' 🍕':'')+(G.upgrades.beerVapes?' 🍺':'');
+    $('counter-sub').textContent='👤 x'+G.counterQueue+bonusTags;
+    const pct=(G.counterPatience/G.counterMaxPatience)*100;
+    $('counter-bar').style.width=pct+'%';
+    $('counter-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+    cEl.classList.toggle('needs-attention',pct>=30);cEl.classList.toggle('critical',pct<30);
+  }else{$('counter-sub').textContent='No customers';$('counter-bar').style.width='0%';cEl.classList.remove('needs-attention','critical')}
+
+  // Drive-thru
+  const dtEl=$('drivethru-station'),dtCar=$('dt-car');
+  dtCar.classList.toggle('visible',G.driveThru.queue>0);dtCar.textContent=G.driveThru.carType;
+  if(G.driveThru.queue>0){
+    $('drivethru-sub').textContent='🚘 x'+G.driveThru.queue;
+    const pct=(G.driveThru.patience/G.driveThru.maxPatience)*100;
+    $('drivethru-bar').style.width=pct+'%';
+    $('drivethru-bar').className='sbar-fill '+(pct<30?'red':pct<60?'yellow':'green');
+    dtEl.classList.toggle('needs-attention',pct>=30);dtEl.classList.toggle('critical',pct<30);
+  }else{$('drivethru-sub').textContent='No orders';$('drivethru-bar').style.width='0%';dtEl.classList.remove('needs-attention','critical')}
+
+  // Pizza
+  renderPizza();
+
+  // Cleaning
+  renderClean('bathroom',G.bathroomClean,'Clean','Needs Cleaning','Filthy!');
+  renderClean('floor',G.floorClean,'Clean','Needs Mopping','Filthy!');
+  renderClean('parking',G.parkingClean,'Clean','Needs Sweeping','Littered!');
+
+  // Clerk
+  const clerk=$('clerk');
+  clerk.style.left=(G.clerk.x-14)+'px';clerk.style.top=(G.clerk.y-14)+'px';
+  const cl=$('clerk-label');
+  cl.style.left=(G.clerk.x-28)+'px';cl.style.top=(G.clerk.y-30)+'px';
+  if(G.clerk.targetKey){cl.classList.add('visible');cl.textContent=G.clerk.arrived?'Working...':'Going →'}
+  else cl.classList.remove('visible');
+
+  const pr=$('prog-ring'),cp=$('clerk-progress');
+  cp.style.left=(G.clerk.x-18)+'px';cp.style.top=(G.clerk.y-18)+'px';
+  if(G.clerk.arrived&&G.clerk.targetKey&&G.clerk.taskDuration>0){
+    pr.setAttribute('stroke-dashoffset',94.25*(1-G.clerk.taskProgress/G.clerk.taskDuration));cp.style.opacity='1';
+  }else cp.style.opacity='0';
+}
+
+function renderPizza(){
+  const el=$('pizza-station'),bar=$('pizza-bar'),sub=$('pizza-sub'),p=G.pizza;
+  el.classList.remove('pizza-ready','pizza-done','needs-attention','critical');
+  if(p.state==='empty'){sub.textContent='No Pizza';bar.style.width='0%';bar.className='sbar-fill orange'}
+  else if(p.state==='cooking'){
+    const ct=pizzaCookTime();
+    if(p.cookProgress<ct){
+      sub.textContent='🔥 Cooking...';bar.style.width=(p.cookProgress/ct*100)+'%';bar.className='sbar-fill orange';
+    }else{
+      const grace=PIZZA_GRACE-(p.cookProgress-ct);
+      sub.textContent='✅ TAKE IT OUT!';bar.style.width='100%';
+      bar.className='sbar-fill '+(grace/PIZZA_GRACE<.35?'red':'green');
+      el.classList.add(grace/PIZZA_GRACE<.35?'critical':'pizza-done');
+    }
+  }else if(p.state==='ready'){
+    sub.textContent='🍕 HOT & READY!';bar.style.width=(p.readyTimer/PIZZA_READY_TIME*100)+'%';
+    bar.className='sbar-fill green';el.classList.add('pizza-ready');
+  }else if(p.state==='burnt'){
+    sub.textContent='💨 Burnt! Clean it!';bar.style.width='100%';bar.className='sbar-fill red';el.classList.add('critical');
+  }
+}
+
+function renderClean(key,val,good,warn,bad){
+  const el=$(key+'-station'),bar=$(key+'-bar'),sub=$(key+'-sub');
+  bar.style.width=val+'%';
+  if(val>60){sub.textContent=good;bar.className='sbar-fill green';el.classList.remove('needs-attention','critical')}
+  else if(val>25){sub.textContent=warn;bar.className='sbar-fill yellow';el.classList.add('needs-attention');el.classList.remove('critical')}
+  else{sub.textContent=bad;bar.className='sbar-fill red';el.classList.remove('needs-attention');el.classList.add('critical')}
+}
+
+// ══════════════════════════════════════════
+// GAME LOOP
+// ══════════════════════════════════════════
+let lastTime=0;
+function gameLoop(ts){
+  requestAnimationFrame(gameLoop);
+  if(!lastTime){lastTime=ts;return}
+  const dt=Math.min((ts-lastTime)/1000,0.1);lastTime=ts;
+  if(G.screen!=='playing'||G.paused)return;
+
+  G.timeLeft-=dt;
+  if(G.timeLeft<=0){G.timeLeft=0;endDay();return}
+  if(G.satisfaction<=0){G.satisfaction=0;gameOver('The health inspector shut you down! Satisfaction hit 0%.');return}
+
+  updateCustomers(dt);updatePizza(dt);updateDegradation(dt);updatePassive(dt);updateClerk(dt);
+  render();
+}
+
+// ══════════════════════════════════════════
+// START
+// ══════════════════════════════════════════
+init();
+requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>
